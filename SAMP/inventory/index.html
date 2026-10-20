@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Inventory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{--bg:#0e0818;--panel:rgba(24,12,42,.92);--line:rgba(168,85,247,.28);--acc:#a855f7;--acc2:#7c3aed;--txt:#ece6f7;--mut:#9a8cb5;--slot:rgba(255,255,255,.07)}
+*{box-sizing:border-box;margin:0;user-select:none}
+html,body{height:100%;overflow:hidden;font-family:"Segoe UI",Arial,sans-serif;color:var(--txt)}
+body.demo{background:radial-gradient(circle at 50% 40%,#2a1450,#07030f)}
+#wrap{position:absolute;inset:0;display:none;align-items:center;justify-content:center}
+#wrap.on{display:flex}
+#app{width:1100px;height:640px;transform-origin:center;display:grid;grid-template-columns:330px 1fr 270px;gap:14px;padding:22px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 0 60px rgba(124,58,237,.25)}
+h1{font-size:13px;letter-spacing:3px;text-align:center;grid-column:1/4;margin-bottom:-4px}
+h2{font-size:22px;font-weight:800;color:var(--txt)}h2 small{display:block;font-size:10px;letter-spacing:2px;color:var(--acc);font-weight:600}
+.col{display:flex;flex-direction:column;gap:10px;min-height:0}
+.head{display:flex;justify-content:space-between;align-items:flex-end}
+.wt{font-size:12px;color:var(--mut)}
+.bar{height:3px;background:var(--slot);border-radius:2px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc2),var(--acc));transition:width .25s}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.slot{position:relative;aspect-ratio:1;background:var(--slot);border:1px solid transparent;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:26px;transition:.12s}
+.slot:hover{border-color:var(--line);background:rgba(168,85,247,.14)}
+.slot.sel{border-color:var(--acc);box-shadow:0 0 12px rgba(168,85,247,.5)}
+.slot.over{border-color:#fff;background:rgba(168,85,247,.3)}
+.slot.src{opacity:.35}
+#ghost{position:fixed;z-index:99;width:54px;height:54px;margin:-27px 0 0 -27px;pointer-events:none;display:none;align-items:center;justify-content:center;font-size:28px;background:rgba(168,85,247,.35);border:1px solid var(--acc);border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+.slot .q{position:absolute;right:4px;bottom:2px;font-size:10px;font-weight:700}
+.slot .k{position:absolute;left:4px;top:2px;font-size:9px;color:var(--mut)}
+.slot .lb{position:absolute;inset:auto 0 3px 0;text-align:center;font-size:8px;letter-spacing:1px;color:var(--mut);pointer-events:none}
+#bag{overflow-y:auto;padding-right:4px;flex:1;align-content:start}
+#bag::-webkit-scrollbar{width:4px}#bag::-webkit-scrollbar-thumb{background:var(--acc2);border-radius:2px}
+.mid{align-items:center;justify-content:center;position:relative}
+.body{position:relative;width:100%;height:330px;display:flex;justify-content:center}
+.body svg{height:100%;opacity:.9}
+.eq{position:absolute;width:56px;height:56px}
+.eq.l{left:calc(50% - 150px)}.eq.r{left:calc(50% + 94px)}
+#hot{display:grid;grid-template-columns:repeat(5,64px);gap:8px;margin-top:6px}
+#hot .slot{font-size:24px}
+.card{background:var(--slot);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.card .ic{font-size:44px;text-align:center}.card b{font-size:15px}.card p{font-size:12px;color:var(--mut);line-height:1.4}
+.row{display:flex;gap:8px}
+button{flex:1;padding:9px;border:0;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;color:#fff;background:var(--acc2);transition:.12s}
+button:hover{background:var(--acc)}button.g{background:var(--slot);color:var(--txt)}button:disabled{opacity:.35;cursor:default}
+input[type=number]{width:110px;padding:8px;border-radius:6px;border:1px solid var(--line);background:var(--slot);color:var(--txt);font-weight:700}
+#drop{margin-top:auto;height:62px;border:1px dashed var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--mut);font-size:12px;letter-spacing:1px;transition:.12s}
+#drop.over{border-color:#ef4444;color:#ef4444;background:rgba(239,68,68,.1)}
+#near{display:flex;flex-direction:column;gap:6px;max-height:120px;overflow-y:auto}
+#givebox{flex-direction:column}
+#owner{text-align:center;line-height:1.25}#owner b{display:block;font-size:17px;font-weight:800;letter-spacing:.5px}#owner span{font-size:11px;letter-spacing:2px;color:var(--acc);font-weight:700}
+.esc{font-size:11px;color:var(--mut);text-align:center}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:none;z-index:100;padding:8px 14px;border-radius:8px;font-size:12px;background:rgba(24,12,42,.96);border:1px solid var(--acc);color:var(--txt)}
+</style>
+</head>
+<body>
+<div id="ghost"></div>
+<div id="toast"></div>
+<div id="wrap">
+ <div id="app">
+  <h1>INVENTORY</h1>
+
+  <div class="col">
+   <div class="head"><h2><small>SISTEM</small>Tas</h2><div class="wt" id="wt">0 / 50 kg</div></div>
+   <div class="bar"><i id="bar"></i></div>
+   <div class="grid" id="bag"></div>
+  </div>
+
+  <div class="col mid">
+   <div id="owner"><span>INVENTORY</span><b id="ownerN">-</b></div>
+   <div class="body">
+    <svg viewBox="0 0 100 220" fill="none" stroke="#c4b5fd" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+     <circle cx="50" cy="22" r="14" fill="#e9e1ff"/><path d="M50 40v70M22 52h56M22 52l-8 52M78 52l8 52M50 110l-18 90M50 110l18 90"/>
+    </svg>
+   </div>
+   <div id="hot"></div>
+   <div id="drop">&#128465; LEPAS ITEM &mdash; seret ke sini</div>
+   <div class="esc">ESC untuk menutup &middot; klik dua kali untuk memakai</div>
+  </div>
+
+  <div class="col">
+   <div class="head"><h2><small>DETAIL</small>Item</h2></div>
+   <div class="card" id="detail"><p>Pilih item untuk melihat detail.</p></div>
+   <div class="row"><span class="wt" style="align-self:center">Jumlah</span><input type="number" id="qty" min="1" value="1"></div>
+   <div class="row"><button id="use" disabled>Pakai</button><button class="g" id="givebtn" disabled>Berikan</button><button class="g" id="dropbtn" disabled>Buang</button></div>
+   <div class="card" id="givebox" style="display:none"><b>Berikan ke</b><div id="near"></div><button class="g" id="givecancel">Batal</button></div>
+  </div>
+ </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var MAXW=50, BAG=42;
+var EQ=[["head","KEPALA","l"],["mask","MASKER","l"],["body","BAJU","l"],["legs","CELANA","l"],
+        ["shoes","SEPATU","r"],["weapon","SENJATA","r"],["bag","TAS","r"],["phone","HP","r"]];
+var S={bag:[],equip:{},hot:[]}, sel=null, overBusy=false;
+var $=function(i){return document.getElementById(i)};
+var toastT=0;
+function toast(m){var e=$("toast");e.textContent=m;e.style.display="block";clearTimeout(toastT);toastT=setTimeout(function(){e.style.display="none"},2200)}
+
+/* ---- jembatan ke samp-cef (aman kalau dibuka di browser biasa) ---- */
+var HAS=(typeof cef!=="undefined");
+function emit(name){
+  var a=[].slice.call(arguments,1);
+  if(HAS){try{if(a.length)cef.emit(name,a.join("|"));else cef.emit(name);}catch(e){}}
+  else console.log("[emit]",name,a);
+}
+
+/* ---- data ---- */
+function get(z,i){return z==="equip"?(S.equip[i]||null):S[z][i]||null}
+function put(z,i,v){if(z==="equip"){if(v)S.equip[i]=v;else delete S.equip[i];}else S[z][i]=v}
+
+function iw(it){return it.wp?it.w:it.w*it.q}
+function weight(){var w=0;S.bag.concat(S.hot).forEach(function(it){if(it)w+=iw(it)});
+  for(var k in S.equip)w+=iw(S.equip[k]);return w}
+
+/* ---- render ---- */
+function fq(it){if(it.id!=="money")return it.q;var n=it.q;
+  if(n>=1e9)return "$"+(n/1e9).toFixed(1)+"B";if(n>=1e6)return "$"+(n/1e6).toFixed(1)+"M";if(n>=1e3)return "$"+(n/1e3).toFixed(1)+"K";return "$"+n}
+function slotEl(z,i,label,key){
+  var d=document.createElement("div");d.className="slot";
+  d.dataset.z=z;d.dataset.i=i;
+  var it=get(z,i);
+  if(it){d.textContent=it.ic;d.title=it.n;if(it.q>1||it.id==="money"||(it.wp&&it.q<1)){var q=document.createElement("span");q.className="q";q.textContent=fq(it);d.appendChild(q)}}
+  else if(label){var l=document.createElement("span");l.className="lb";l.textContent=label;d.appendChild(l)}
+  if(key){var k=document.createElement("span");k.className="k";k.textContent=key;d.appendChild(k)}
+  if(sel&&sel.z===z&&String(sel.i)===String(i))d.classList.add("sel");
+  return d;
+}
+function render(){
+  var bag=$("bag");bag.innerHTML="";
+  for(var i=0;i<BAG;i++)bag.appendChild(slotEl("bag",i));
+  var hot=$("hot");hot.innerHTML="";
+  for(i=0;i<5;i++)hot.appendChild(slotEl("hot",i,"",i+1));
+  document.querySelectorAll(".eq").forEach(function(e){e.remove()});
+  var body=document.querySelector(".body"),L=0,R=0;
+  EQ.forEach(function(e){
+    var s=slotEl("equip",e[0],e[1]);s.classList.add("eq",e[2]);
+    s.style.top=(e[2]==="l"?L++:R++)*72+10+"px";body.appendChild(s);
+  });
+  var w=weight();$("wt").textContent=w.toFixed(1)+" / "+MAXW+" kg";
+  $("bar").style.width=Math.min(100,w/MAXW*100)+"%";
+  detail();
+}
+function detail(){
+  var it=sel&&get(sel.z,sel.i),c=$("detail");
+  $("use").disabled=$("dropbtn").disabled=$("givebtn").disabled=!it;
+  if(!it){c.innerHTML="<p>Pilih item untuk melihat detail.</p>";$("givebox").style.display="none";return}
+  var inBag=sel.z==="bag",canGive=!!it.g&&!(it.pk&&it.act);
+  $("use").disabled=!it.u;$("givebtn").disabled=!(canGive&&inBag);$("dropbtn").disabled=!!it.x;
+  $("givebtn").title=!canGive?"Item ini tidak bisa diberikan":!inBag?"Pindahkan item ke tas dulu untuk memberikan":"";
+  if(!(canGive&&inBag))$("givebox").style.display="none";
+  c.innerHTML="";
+  var ic=document.createElement("div");ic.className="ic";ic.textContent=it.ic;
+  var b=document.createElement("b");b.textContent=it.n;
+  var p=document.createElement("p");p.textContent=it.d+" "+(it.id==="money"?"Saldo: $"+Number(it.q).toLocaleString("en-US"):it.t?"Sisa masa berlaku: "+it.t+".":it.i?it.i:it.wp?(it.q<1?"Amunisi: 0. Senjata kosong, butuh peluru di tas sebelum bisa dipasang.":it.q>1?"Amunisi: "+it.q+".":"Berat: "+it.w+" kg"):"Berat: "+it.w+" kg x"+it.q);
+  c.appendChild(ic);c.appendChild(b);c.appendChild(p);
+  if(it.pk&&it.act){var h1=document.createElement("p");h1.textContent="HP yang sedang aktif tidak bisa diberikan. Seret ke tas dulu (HP lain bisa dipasang di slot HP).";c.appendChild(h1)}
+  else if(canGive&&!inBag){var h2=document.createElement("p");h2.textContent="Item di hotbar / slot equip tidak bisa diberikan. Seret ke tas dulu.";c.appendChild(h2)}
+  $("qty").max=it.q;if(+$("qty").value>it.q)$("qty").value=it.q;
+}
+
+/* ---- aksi ---- */
+/* slot equip hanya menerima item yang cocok (it.e = nama slot), tas & hotbar menerima apa saja */
+function can(it,z,i){if(it&&it.st&&it.q<1&&z!=="bag")return false;   /* senjata kosong (peluru 0) hanya boleh di tas */
+  return !it||z!=="equip"||it.e===String(i)}
+/* seluruh susunan slot -> "key:zona:slot,..." (b=tas, h=hotbar, e=equip); server menyimpannya per karakter */
+function layout(){var o=[];
+  function add(it,z,i){if(it&&/^[a-z0-9_]+$/.test(it.id))o.push(it.id+":"+z+":"+i)}
+  S.bag.forEach(function(it,i){add(it,"b",i)});
+  S.hot.forEach(function(it,i){add(it,"h",i)});
+  for(var k in S.equip)add(S.equip[k],"e",k);
+  return o.join(",");
+}
+function move(z1,i1,z2,i2){
+  if(z1===z2&&String(i1)===String(i2))return;
+  var a=get(z1,i1),b=get(z2,i2);if(!a)return;
+  if(!can(a,z2,i2)||!can(b,z1,i1))return;
+  var hp0=S.equip.phone?S.equip.phone.id:"-";
+  overBusy=false;
+  put(z2,i2,a);put(z1,i1,b);
+  sel={z:z2,i:i2};emit("inv:layout",layout());
+  var hp1=S.equip.phone?S.equip.phone.id:"-";
+  if(hp1!==hp0)emit("inv:phone",hp1);   /* HP di slot HP = HP aktif; server yang mengganti */
+  render();
+}
+/* Senjata hanya aktif di GTA kalau ada di hotbar / slot SENJATA. Senjata cadangan (sw) di tas dipindah ke sana dulu;
+   server yang memasangnya ke GTA setelah menerima susunan slot (inv:layout). */
+function equipFromBag(){
+  for(var h=0;h<5;h++)if(!S.hot[h]){move("bag",sel.i,"hot",h);return}
+  if(!S.equip.weapon){move("bag",sel.i,"equip","weapon");return}
+  toast("Hotbar penuh. Kosongkan satu slot hotbar dulu.");
+}
+function use(){
+  if(!sel)return;var it=get(sel.z,sel.i);if(!it||!it.u)return;
+  if(it.st){if(it.q<1){toast("Peluru habis. Butuh peluru di tas untuk memasang senjata ini.");return}if(sel.z==="bag")equipFromBag();return}
+  emit("inv:use",sel.z,String(sel.i),it.id)
+}
+function drop(z,i,n){
+  var it=get(z,i);if(!it||it.x)return;n=Math.max(1,Math.min(it.q,n|0));
+  emit("inv:drop",z,String(i),it.id,n);
+  it.q-=n;if(it.q<=0){put(z,i,null);sel=null}render();
+}
+
+/* ---- give ---- */
+var NEAR=[];
+function showNear(){
+  var b=$("givebox"),n=$("near");n.innerHTML="";b.style.display="flex";
+  if(!NEAR.length){var p=document.createElement("p");p.className="wt";p.textContent="Tidak ada pemain di dekatmu.";n.appendChild(p);return}
+  NEAR.forEach(function(pl){
+    var btn=document.createElement("button");btn.className="g";btn.textContent=pl.n+" ("+pl.id+")";
+    btn.onclick=function(){give(pl.id)};n.appendChild(btn);
+  });
+}
+function openGive(){if(!sel||sel.z!=="bag"||!get(sel.z,sel.i))return;emit("inv:nearby");showNear()}
+function give(pid){
+  var it=sel&&sel.z==="bag"&&get(sel.z,sel.i);if(!it)return;
+  var n=Math.max(1,Math.min(it.q,(+$("qty").value)|0));
+  if(it.id==="money"&&it.q<1){toast("Uang tidak cukup.");return}
+  emit("inv:give",sel.z,String(sel.i),it.id,n,pid);   /* server yang memotong item, lalu kirim inv:set */
+  $("givebox").style.display="none";
+}
+
+/* ---- events ---- */
+document.addEventListener("click",function(e){
+  if(justDragged)return;
+  var s=e.target.closest(".slot");if(!s)return;
+  sel={z:s.dataset.z,i:s.dataset.i};render();
+});
+document.addEventListener("dblclick",function(e){if(e.target.closest(".slot"))use()});
+/* Drag berbasis mouse (bukan HTML5 drag-and-drop, yang sering tidak jalan di CEF in-game). Geser > 5px = drag, kurang = klik biasa. */
+var drag=null,justDragged=false,G=$("ghost");
+function slotAt(x,y){var e=document.elementFromPoint(x,y);return e&&e.closest?e.closest(".slot,#drop"):null}
+function clearOver(){document.querySelectorAll(".over,.src").forEach(function(o){o.classList.remove("over");o.classList.remove("src")})}
+function endDrag(){drag=null;G.style.display="none";clearOver()}
+document.addEventListener("mousedown",function(e){
+  if(e.button!==0||e.target.closest("input,button"))return;
+  var s=e.target.closest(".slot");if(!s||!get(s.dataset.z,s.dataset.i))return;
+  drag={z:s.dataset.z,i:s.dataset.i,x:e.clientX,y:e.clientY,on:false,el:s};
+});
+document.addEventListener("mousemove",function(e){
+  if(!drag)return;
+  if(!drag.on){
+    if(Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)<5)return;
+    drag.on=true;var it=get(drag.z,drag.i);G.textContent=it?it.ic:"";G.style.display="flex";drag.el.classList.add("src");
+  }
+  G.style.left=e.clientX+"px";G.style.top=e.clientY+"px";
+  document.querySelectorAll(".over").forEach(function(o){o.classList.remove("over")});
+  var t=slotAt(e.clientX,e.clientY);if(t&&t!==drag.el)t.classList.add("over");
+});
+document.addEventListener("mouseup",function(e){
+  if(!drag)return;
+  if(drag.on){
+    var t=slotAt(e.clientX,e.clientY),d0=drag;justDragged=true;setTimeout(function(){justDragged=false},0);
+    endDrag();
+    if(t&&t.id==="drop"){var it=get(d0.z,d0.i);if(it)drop(d0.z,d0.i,it.q)}
+    else if(t)move(d0.z,d0.i,t.dataset.z,t.dataset.i);
+  }else drag=null;
+});
+window.addEventListener("blur",endDrag);
+$("use").onclick=use;
+$("givebtn").onclick=openGive;
+$("givecancel").onclick=function(){$("givebox").style.display="none"};
+$("dropbtn").onclick=function(){if(sel)drop(sel.z,sel.i,+$("qty").value||1)};
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape")close(true);
+  if(e.key>="1"&&e.key<="5"&&document.activeElement.tagName!=="INPUT"){sel={z:"hot",i:+e.key-1};use();render()}
+});
+
+/* ---- buka / tutup ---- */
+function fit(){var k=Math.min(innerWidth/1160,innerHeight/700,1);$("app").style.transform="scale("+k+")"}
+addEventListener("resize",fit);fit();
+function open(){$("wrap").classList.add("on")}
+function close(notify){$("wrap").classList.remove("on");if(notify)emit("inv:close")}
+
+/* Katalog: nama, ikon, berat (kg, hanya tampilan), deskripsi, u=bisa dipakai, g=bisa diberikan.
+   Server hanya mengirim {"bag":[{"k":"bandage","q":3}]}. Samakan u/g dengan /use dan /give di Pawn. */
+var CAT={
+ money:{n:"Uang Tunai",ic:"\uD83D\uDCB5",w:0,d:"Uang di dompet. Isi jumlah lalu klik Berikan untuk membayar pemain di dekatmu (sama seperti /pay).",u:0,g:1,x:1},
+ idcard:{n:"ID-Card",ic:"\uD83C\uDD94",w:0,d:"Kartu identitas. Pakai /idcard untuk menunjukkannya.",u:0,g:1,x:1},
+ drivelic:{n:"SIM",ic:"\uD83D\uDE98",w:0,d:"Surat izin mengemudi. Pakai /drivelic untuk menunjukkannya.",u:0,g:1,x:1},
+ bandage:{n:"Perban",ic:"\uD83E\uDE79",w:.2,d:"Memulihkan +5 darah.",u:1,g:1},
+ snack:{n:"Snack",ic:"\uD83C\uDF6B",w:.2,d:"Menambah lapar +15.",u:1,g:1},
+ sprunk:{n:"Sprunk",ic:"\uD83E\uDD64",w:.4,d:"Menambah energi +15.",u:1,g:1},
+ medicine:{n:"Medicine",ic:"\uD83D\uDC8A",w:.1,d:"Menyembuhkan sakit dan mengurangi stres.",u:1,g:1},
+ medkit:{n:"Medkit",ic:"\uD83E\uDDF0",w:1,d:"Perlengkapan medis.",u:0,g:1},
+ gas:{n:"Gas Fuel",ic:"\u26FD",w:2,d:"Mengisi bensin kendaraan di dekatmu.",u:1,g:1},
+ material:{n:"Material",ic:"\uD83E\uDDF1",w:.1,d:"Bahan pembuat barang (maks 500).",u:0,g:1},
+ component:{n:"Component",ic:"\u2699\uFE0F",w:.1,d:"Komponen mekanik (maks 500).",u:0,g:1},
+ food:{n:"Food",ic:"\uD83C\uDF54",w:.3,d:"Bahan makanan.",u:0,g:1},
+ seed:{n:"Seed",ic:"\uD83C\uDF31",w:.05,d:"Bibit untuk bertani.",u:0,g:1},
+ potato:{n:"Potato",ic:"\uD83E\uDD54",w:1,d:"Hasil farming (kg).",u:0,g:1},
+ wheat:{n:"Wheat",ic:"\uD83C\uDF3E",w:1,d:"Hasil farming (kg).",u:0,g:1},
+ orange:{n:"Orange",ic:"\uD83C\uDF4A",w:1,d:"Hasil farming (kg).",u:0,g:1},
+ fish:{n:"Fish",ic:"\uD83D\uDC1F",w:1,d:"Hasil memancing (kg).",u:0,g:1},
+ marijuana:{n:"Marijuana",ic:"\uD83C\uDF3F",w:.1,d:"Barang ilegal.",u:1,g:1},
+ batukotor:{n:"Batu Kotor",ic:"\uD83E\uDEA8",w:2,d:"Hasil mining, perlu diolah.",u:0,g:1},
+ mask:{n:"Topeng",ic:"\uD83C\uDFAD",w:.2,d:"Penyamaran. Pakai /mask untuk memakai / melepas. Lepas dulu sebelum diberikan.",u:0,g:1,x:1},
+ helmet:{n:"Helm",ic:"\u26D1\uFE0F",w:.5,d:"Helm pengendara. Pakai /helmet untuk memakai / melepas. Lepas dulu sebelum diberikan.",u:0,g:1,x:1},
+ gps:{n:"GPS",ic:"\uD83D\uDCCD",w:.2,d:"Penunjuk lokasi. Pakai /gps.",u:0,g:1,x:1},
+ phonebook:{n:"Phone Book",ic:"\uD83D\uDCD2",w:.2,d:"Buku telepon untuk mencari nomor pemain.",u:0,g:1,x:1},
+ walkie:{n:"Walkie Talkie",ic:"\uD83D\uDCFB",w:.3,d:"Radio komunikasi. Atur channel dengan /setfreq.",u:0,g:1,x:1},
+ fishtool:{n:"Pancingan",ic:"\uD83C\uDFA3",w:.5,d:"Alat memancing (maks 3).",u:0,g:1},
+ worm:{n:"Umpan Cacing",ic:"\uD83D\uDC1B",w:.05,d:"Umpan untuk memancing.",u:0,g:1}
+};
+function phcat(k){return /^ph\d+$/.test(k)?{n:"Handphone",ic:"\uD83D\uDCF1",w:.2,d:"Telepon genggam. Pakai /call, /sms dan /p. Hanya HP di slot HP yang aktif. HP cadangan di tas bisa diberikan ke pemain lain.",u:0,g:1,x:1,e:"phone",pk:1}:null}
+
+/* Senjata dikirim server sebagai "w<weaponid>" dengan jumlah = peluru. Pakai / tombol 1-5 = pegang senjata. */
+var WN={1:"Brass Knuckles",2:"Golf Club",3:"Nightstick",4:"Knife",5:"Baseball Bat",6:"Shovel",7:"Pool Cue",8:"Katana",9:"Chainsaw",
+ 10:"Dildo",11:"Dildo",12:"Vibrator",13:"Vibrator",14:"Flowers",15:"Cane",16:"Grenade",17:"Tear Gas",18:"Molotov Cocktail",
+ 22:"Colt 45",23:"Silenced Pistol",24:"Desert Eagle",25:"Shotgun",26:"Sawn-off Shotgun",27:"Combat Shotgun",28:"Uzi",29:"MP5",
+ 30:"AK-47",31:"M4",32:"Tec-9",33:"Country Rifle",34:"Sniper Rifle",35:"RPG",36:"HS Rocket",37:"Flamethrower",38:"Minigun",
+ 39:"Satchel Charge",40:"Detonator",41:"Spray Can",42:"Fire Extinguisher",43:"Camera",44:"Night Vision",45:"Thermal Goggles",46:"Parachute"};
+function wcat(k,r){
+  var m=/^(w|sw)(\d+)$/.exec(k);if(!m)return null;
+  var id=m[1]==="w"?+m[2]:+r.wid,st=m[1]==="sw";if(!WN[id])return null;
+  var melee=id<=15,gun=id>=22&&id<=38;
+  return {n:WN[id],ic:melee?"\uD83D\uDD2A":id>=16&&id<=18||id===39?"\uD83D\uDCA3":gun?"\uD83D\uDD2B":"\uD83E\uDDF0",
+    w:gun?2:1,d:st?"Senjata disimpan di tas, belum bisa dipakai. Klik dua kali atau seret ke hotbar untuk memasangnya (menggantikan senjata di slot yang sama). Bisa diberikan ke pemain lain.":"Senjata aktif. Klik dua kali atau tekan angka hotbar untuk menggenggam. Pindahkan ke tas untuk menyimpannya (setelah itu baru bisa diberikan).",u:1,g:st?1:0,x:1,e:"weapon",dz:st?"":"hot",wp:1,st:st};
+}
+var LAY={};
+function parseLay(s){var o={},Z={b:"bag",h:"hot",e:"equip"};
+  String(s||"").split(",").forEach(function(r){var a=r.split(":");if(a.length===3&&Z[a[1]])o[a[0]]={z:Z[a[1]],i:a[1]==="e"?a[2]:parseInt(a[2],10)}});
+  return o}
+function okSlot(z,i){
+  if(z==="bag")return i>=0&&i<BAG;
+  if(z==="hot")return i>=0&&i<5;
+  return EQ.some(function(e){return e[0]===i});
+}
+
+/* Pawn -> UI: cef_emit_event(playerid, "inv:set", CEFSTR(json)). Posisi slot yang sudah kamu atur diingat selama UI terbuka. */
+function setData(raw){
+  var d=typeof raw==="string"?JSON.parse(raw):raw, old={};
+  if(d.maxw)MAXW=d.maxw;
+  if(d.pn!=null)$("ownerN").textContent=d.pn+(d.pid!=null?" ("+d.pid+")":"");
+  S.bag.forEach(function(it,i){if(it)old[it.id]={z:"bag",i:i}});
+  S.hot.forEach(function(it,i){if(it)old[it.id]={z:"hot",i:i}});
+  for(var e in S.equip)old[S.equip[e].id]={z:"equip",i:e};
+  if(d.lay!=null)LAY=parseLay(d.lay);
+  var mvd=false;
+  if(d.mv){var snap={};for(var k0 in old)snap[k0]=old[k0];
+    d.mv.split(",").forEach(function(q){var a=q.split(">");if(a.length===2&&snap[a[0]]){old[a[1]]=snap[a[0]];mvd=true}})}
+  S.bag=new Array(BAG).fill(null);S.hot=new Array(5).fill(null);S.equip={};sel=null;
+  var over=false;
+  (d.bag||[]).forEach(function(r){
+    var c=CAT[r.k]||wcat(r.k,r)||phcat(r.k)||{};
+    var it={id:r.k,n:c.n||r.k,ic:c.ic||"\uD83D\uDCE6",q:r.q,w:c.w||0,d:c.d||"",u:c.u!=null?c.u:1,g:c.g!=null?c.g:1,x:c.x?1:0,t:r.t||"",
+            e:c.e||"",dz:c.dz||"",wp:c.wp?1:0,st:c.st?1:0,i:"",pk:c.pk?1:0,act:r.a?1:0};
+    if(it.pk)it.i=it.act?"No. "+r.n+" \u00B7 Pulsa "+(r.c||0)+" \u00B7 AKTIF":"No. "+r.n+" \u00B7 Cadangan. Seret ke slot HP untuk mengaktifkan.";
+    /* 1) posisi dari sesi ini / yang tersimpan di server  2) default (HP -> slot HP, senjata -> hotbar)  3) tas */
+    var p=old[it.id]||LAY[it.id];
+    if(it.pk){   /* HP aktif selalu di slot HP; HP cadangan tidak boleh di slot HP */
+      if(it.act){if(!S.equip.phone){S.equip.phone=it;return}}
+      else if(p&&p.z==="equip")p=null;
+    }
+    /* Senjata: w<id> (dibawa, aktif di GTA) hanya boleh di hotbar / slot SENJATA; sw<uid> (cadangan) hanya di tas.
+       Acuannya keadaan GTA di server, jadi posisi lama yang tidak cocok diabaikan. */
+    if(it.wp&&p&&(it.st?p.z!=="bag":p.z==="bag"))p=null;
+    if(p&&okSlot(p.z,p.i)&&!get(p.z,p.i)&&can(it,p.z,p.i)){put(p.z,p.i,it);return}
+    if(it.dz==="equip"&&it.e&&!S.equip[it.e]){S.equip[it.e]=it;return}
+    if(it.dz==="hot"){for(var h=0;h<5;h++)if(!S.hot[h]){S.hot[h]=it;return}}
+    if(it.wp&&!it.st){   /* senjata aktif tidak kebagian slot hotbar / SENJATA: sementara ke tas, lalu server menyimpannya */
+      if(!S.equip.weapon){S.equip.weapon=it;return}
+      over=true;
+    }
+    for(var i=0;i<BAG;i++)if(!S.bag[i]){S.bag[i]=it;break}
+  });
+  render();
+  if(!over)overBusy=false;
+  if(mvd||(over&&!overBusy)){if(over)overBusy=true;emit("inv:layout",layout())}   /* overBusy: cegah kirim berulang kalau server menolak */
+}
+if(HAS){
+  cef.on("inv:set",setData);
+  cef.on("inv:open",open);
+  cef.on("inv:near",function(raw){NEAR=typeof raw==="string"?JSON.parse(raw):raw;if($("givebox").style.display!=="none")showNear()});
+  cef.on("inv:close",function(){close(false)});
+  emit("inv:ready");
+}else{
+  /* mode demo di browser biasa */
+  document.body.classList.add("demo");
+  NEAR=[{id:3,n:"Budi_Santoso"},{id:7,n:"Rina_Wijaya"}];
+  setData({maxw:50,pn:"Andi_Pratama",pid:12,bag:[{k:"money",q:1454116},{k:"idcard",q:1,t:"29 days"},{k:"drivelic",q:1,t:"2 months"},{k:"bandage",q:4},{k:"snack",q:3},{k:"sprunk",q:2},{k:"medicine",q:1},{k:"gas",q:1},{k:"material",q:120},{k:"marijuana",q:5},{k:"fish",q:8},{k:"ph1",q:1,n:4821,c:5,a:1},{k:"ph2",q:1,n:7310,c:5,a:0},{k:"w24",q:70},{k:"w5",q:1},{k:"sw3",q:1,wid:4},{k:"sw9",q:0,wid:24},{k:"w31",q:300},{k:"mask",q:1},{k:"gps",q:1},{k:"walkie",q:1},{k:"fishtool",q:2},{k:"worm",q:4}]});
+  open();
+}
+window.INV={open:open,close:close,set:setData};
+})();
+</script>
+</body>
+</html>

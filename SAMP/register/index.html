@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Register</title>
+<style>
+  :root {
+    --bg: #060a10;
+    --card: rgba(13, 19, 28, .92);
+    --line: rgba(255, 255, 255, .09);
+    --text: #eef3f8;
+    --muted: #8d9bad;
+    --accent: #3fc1ad;
+    --accent-2: #5b8def;
+    --accent-3: #9b7bff;
+    --bad: #ff7a69;
+    --warn: #ffc15a;
+    --field: #080d13;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; overflow: hidden; }
+  body {
+    background: var(--bg);
+    font: 15px/1.5 "Segoe UI", system-ui, sans-serif; color: var(--text);
+  }
+
+  /* ---------- Latar: statis, tanpa blur / filter / canvas ---------- */
+  .bg {
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(60vmax 50vmax at 4% 0%, rgba(63, 193, 173, .48), transparent 62%),
+      radial-gradient(56vmax 50vmax at 100% 28%, rgba(91, 141, 239, .44), transparent 64%),
+      radial-gradient(50vmax 40vmax at 45% 108%, rgba(155, 123, 255, .38), transparent 62%),
+      radial-gradient(ellipse at center, transparent 35%, rgba(6, 10, 16, .8) 100%),
+      var(--bg);
+  }
+  .grid {
+    position: absolute; inset: 0; opacity: .6;
+    background-image:
+      linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  /* ---------- Tata letak ---------- */
+  .stage {
+    position: relative; z-index: 1; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px;
+  }
+  .brand { position: absolute; top: 28px; left: 34px; display: flex; align-items: center; gap: 12px; }
+  .brand .mark {
+    width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+    background: linear-gradient(145deg, var(--accent), var(--accent-2));
+  }
+  .brand .mark svg { width: 22px; height: 22px; stroke: #04211c; }
+  .brand b { display: block; font-size: 16px; letter-spacing: 2px; font-weight: 700; line-height: 1.1; }
+  .brand small { color: var(--muted); font-size: 12px; letter-spacing: .6px; }
+
+  .foot {
+    position: absolute; bottom: 22px; left: 0; right: 0; text-align: center;
+    color: var(--muted); font-size: 12.5px; opacity: .75;
+  }
+  .foot kbd {
+    font: inherit; font-size: 11.5px; padding: 1px 7px; border: 1px solid var(--line); border-radius: 6px;
+    background: rgba(255,255,255,.05); color: var(--text);
+  }
+
+  /* ---------- Kartu ---------- */
+  .wrap { position: relative; width: min(410px, 92vw); }
+  .wrap::before {
+    content: ""; position: absolute; inset: -1px; border-radius: 22px; z-index: -1;
+    background: linear-gradient(140deg, var(--accent), transparent 38%, transparent 62%, var(--accent-3));
+    opacity: .55;
+  }
+  .card {
+    padding: 32px 32px 24px; border-radius: 22px; background: var(--card);
+    border: 1px solid var(--line);
+    box-shadow: 0 24px 60px rgba(0,0,0,.5);
+  }
+  .badge {
+    width: 58px; height: 58px; margin: 0 auto 16px; border-radius: 18px; display: grid; place-items: center;
+    background: linear-gradient(145deg, rgba(63,193,173,.28), rgba(155,123,255,.22));
+    border: 1px solid rgba(255,255,255,.14);
+  }
+  .badge svg { width: 28px; height: 28px; stroke: var(--accent); }
+  h1 { margin: 0; text-align: center; font-size: 24px; font-weight: 650; letter-spacing: .2px; }
+  .sub { margin: 7px 0 22px; text-align: center; color: var(--muted); font-size: 14px; }
+  .sub b { color: var(--text); font-weight: 600; }
+
+  label { display: block; margin-bottom: 7px; color: var(--muted); font-size: 12.5px; letter-spacing: .5px; text-transform: uppercase; }
+  .field { position: relative; }
+  .field + label { margin-top: 14px; }
+  .field .lead {
+    position: absolute; left: 14px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%);
+    stroke: var(--muted); pointer-events: none;
+  }
+  .field:focus-within .lead { stroke: var(--accent); }
+  input {
+    width: 100%; font: inherit; color: var(--text); background: var(--field);
+    border: 1px solid var(--line); border-radius: 13px; padding: 14px 48px 14px 44px;
+  }
+  input::placeholder { color: #5d6b7d; }
+  input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(63,193,173,.16); }
+  input.bad { border-color: var(--bad); }
+  .toggle {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 38px; height: 38px; display: grid; place-items: center;
+    background: none; border: 0; border-radius: 10px; cursor: pointer; color: var(--muted);
+  }
+  .toggle:hover { color: var(--text); background: rgba(255,255,255,.06); }
+  .toggle svg { width: 18px; height: 18px; stroke: currentColor; }
+  .toggle .off { display: none; }
+  .toggle.on .off { display: block; }
+  .toggle.on .on { display: none; }
+
+  /* Kekuatan password */
+  .meter { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+  .bars { display: flex; gap: 4px; flex: 1; }
+  .bars i { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,.1); }
+  .bars i.s1 { background: var(--bad); }
+  .bars i.s2 { background: var(--warn); }
+  .bars i.s3 { background: var(--accent); }
+  .meter span { min-width: 74px; text-align: right; }
+
+  .msg { min-height: 22px; margin: 12px 0 14px; font-size: 13.5px; color: var(--bad); text-align: center; }
+  .msg.ok { color: var(--accent); }
+
+  .row { display: flex; gap: 10px; }
+  .btn {
+    font: inherit; border-radius: 13px; padding: 13px 18px; cursor: pointer;
+    border: 1px solid var(--line); background: rgba(255,255,255,.03); color: var(--muted);
+  }
+  .btn:hover { color: var(--text); background: rgba(255,255,255,.08); }
+  .btn.main {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 9px;
+    border: 0; color: #04211c; font-weight: 700; letter-spacing: .3px;
+    background: var(--accent);
+  }
+  .btn.main:hover { background: #55d3bf; color: #04211c; }
+  .btn:disabled { opacity: .6; cursor: default; }
+  .btn:focus-visible, .toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .spin {
+    width: 16px; height: 16px; border-radius: 50%; display: none;
+    border: 2px solid rgba(4,33,28,.3); border-top-color: #04211c; animation: spin .7s linear infinite;
+  }
+  .busy .spin { display: block; }
+
+  .note { margin: 16px 0 0; text-align: center; color: var(--muted); font-size: 12px; opacity: .8; }
+
+
+  /* Langkah (wizard) */
+  .steps { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0 0 20px; font-size: 12px; color: var(--muted); }
+  .steps .st { display: flex; align-items: center; gap: 8px; }
+  .steps .n { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11.5px; font-weight: 700;
+    border: 1px solid var(--line); background: rgba(255,255,255,.04); }
+  .steps .st.on { color: var(--text); }
+  .steps .st.on .n { background: var(--accent); border-color: transparent; color: #04211c; }
+  .steps .st.done .n { background: rgba(63,193,173,.22); border-color: rgba(63,193,173,.5); color: var(--accent); }
+  .steps .bar { width: 34px; height: 1px; background: var(--line); }
+  .page { display: none; }
+  .page.on { display: block; }
+
+  /* Tanggal lahir */
+  .dob { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 10px; }
+  .dob input { padding: 14px 10px; text-align: center; }
+  .hint { margin: 7px 0 0; font-size: 12px; color: var(--muted); opacity: .8; }
+
+  /* Gender */
+  .gender { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 2px; }
+  .g {
+    font: inherit; color: var(--muted); cursor: pointer; padding: 16px 10px 14px; border-radius: 14px;
+    background: var(--field); border: 1px solid var(--line); display: grid; gap: 8px; justify-items: center;
+  }
+  .g svg { width: 30px; height: 30px; stroke: currentColor; }
+  .g b { font-size: 14px; font-weight: 600; color: var(--text); }
+  .g small { font-size: 11.5px; }
+  .g:hover { background: rgba(255,255,255,.05); }
+  .g.sel { border-color: var(--accent); color: var(--accent); background: rgba(63,193,173,.1); box-shadow: 0 0 0 4px rgba(63,193,173,.12); }
+  .g.bad { border-color: var(--bad); }
+  .g:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .gap { height: 16px; }
+
+  .shake { animation: shake .35s; }
+  @keyframes shake { 20%,60% { transform: translateX(-7px); } 40%,80% { transform: translateX(7px); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .shake, .spin { animation: none; } }
+  @media (max-height: 780px) { .brand, .foot { display: none; } }
+</style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"><div class="grid"></div></div>
+
+  <div class="stage">
+    <div class="brand">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18V7l8 7 8-7v11"/></svg>
+      </div>
+      <div><b>OLD TOWN ROLEPLAY</b><small>Tempat Berperan Nomor Satu</small></div>
+    </div>
+
+    <div class="wrap" id="wrap">
+      <main class="card">
+        <div class="badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="10" cy="8" r="3.6"/><path d="M3.5 20c.6-3.6 3.2-5.6 6.5-5.6 1.3 0 2.5.3 3.4.9"/><path d="M18 14v6M15 17h6"/>
+          </svg>
+        </div>
+
+        <h1 id="title">Buat akun baru</h1>
+        <p class="sub" id="sub">Akunmu belum terdaftar. Buat password untuk mulai bermain.</p>
+
+        <div class="steps" aria-hidden="true">
+          <div class="st on" id="st1"><span class="n">1</span>Akun</div>
+          <div class="bar"></div>
+          <div class="st" id="st2"><span class="n">2</span>Karakter</div>
+        </div>
+
+        <!-- ===== Langkah 1: password ===== -->
+        <section class="page on" id="p1">
+          <label for="pass">Password</label>
+          <div class="field">
+            <svg class="lead" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="4" y="11" width="16" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 018 0v3"/>
+            </svg>
+            <input id="pass" type="password" autocomplete="off" maxlength="64" placeholder="Minimal 6 karakter" autofocus>
+            <button class="toggle" id="toggle" type="button" aria-label="Tampilkan password">
+              <svg class="on" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="off" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.2A10.5 10.5 0 0112 6c6.4 0 10 6 10 6a17 17 0 01-3.3 4M6.5 7.8C3.6 9.5 2 12 2 12s3.6 6 10 6c1.4 0 2.7-.3 3.8-.7"/></svg>
+            </button>
+          </div>
+
+          <label for="pass2">Ulangi Password</label>
+          <div class="field">
+            <svg class="lead" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/><path d="M9 12l2.2 2.2L15.5 10"/>
+            </svg>
+            <input id="pass2" type="password" autocomplete="off" maxlength="64" placeholder="Ketik ulang password">
+          </div>
+
+          <div class="meter" aria-hidden="true">
+            <div class="bars" id="bars"><i></i><i></i><i></i></div>
+            <span id="strength">Kekuatan</span>
+          </div>
+        </section>
+
+        <!-- ===== Langkah 2: tanggal lahir + gender ===== -->
+        <section class="page" id="p2">
+          <label for="dd">Tanggal Lahir</label>
+          <div class="dob">
+            <input id="dd" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="Tgl">
+            <input id="mm" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="Bln">
+            <input id="yyyy" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Tahun">
+          </div>
+          <p class="hint">Contoh: 15 / 04 / 1998</p>
+
+          <div class="gap"></div>
+          <label>Gender</label>
+          <div class="gender" id="gender">
+            <button class="g" type="button" data-g="1">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="14" r="5"/><path d="M14 10l6-6M15 4h5v5"/></svg>
+              <b>Laki-Laki</b><small>Male</small>
+            </button>
+            <button class="g" type="button" data-g="2">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5"/><path d="M12 14v8M9 18h6"/></svg>
+              <b>Perempuan</b><small>Female</small>
+            </button>
+          </div>
+        </section>
+
+        <div class="msg" id="msg" role="alert"></div>
+
+        <div class="row">
+          <button class="btn" id="abort" type="button">Keluar</button>
+          <button class="btn main" id="reg" type="button"><span class="spin"></span><span id="regText">Lanjut</span></button>
+        </div>
+
+        <p class="note" id="note">Password boleh huruf, angka, dan _ [ ] ( ). Jangan berikan password ke siapa pun.</p>
+      </main>
+    </div>
+
+    <div class="foot">Tekan <kbd>Enter</kbd> untuk lanjut &nbsp;·&nbsp; Butuh bantuan? Hubungi admin di Discord</div>
+  </div>
+
+<script>
+(function () {
+  var hasCef = typeof window.cef !== "undefined";
+  var MIN_LEN = 6;                       /* server: strlen(password) > 5 */
+  var VALID = /^[A-Za-z0-9_\[\]()]+$/;   /* server: IsValidPassword */
+  var NOTE1 = "Password boleh huruf, angka, dan _ [ ] ( ). Jangan berikan password ke siapa pun.";
+  var NOTE2 = "Data ini dipakai untuk KTP karaktermu dan tidak bisa diubah sembarangan.";
+  var step = 1, gender = 0, busy = false, timer = null;
+
+  function $(id) { return document.getElementById(id); }
+  var elPass = $("pass"), elPass2 = $("pass2"), elDd = $("dd"), elMm = $("mm"), elYy = $("yyyy");
+  var elMsg = $("msg"), elReg = $("reg"), elRegText = $("regText"), elWrap = $("wrap");
+  var elToggle = $("toggle"), elSub = $("sub"), elBars = $("bars").children, elStrength = $("strength");
+  var elAbort = $("abort"), elNote = $("note"), elTitle = $("title");
+  var gBtns = document.querySelectorAll(".g");
+  var allInputs = [elPass, elPass2, elDd, elMm, elYy];
+  var subName = "";
+
+  function setBusy(b) {
+    busy = b;
+    elReg.disabled = b;
+    elReg.classList.toggle("busy", b);
+    elRegText.textContent = b ? "Mendaftarkan..." : (step === 1 ? "Lanjut" : "Daftar");
+    if (!b && timer) { clearTimeout(timer); timer = null; }
+  }
+
+  function clearMarks() {
+    allInputs.forEach(function (i) { i.classList.remove("bad"); });
+    for (var i = 0; i < gBtns.length; i++) gBtns[i].classList.remove("bad");
+  }
+  function clearError() { elMsg.textContent = ""; elMsg.classList.remove("ok"); clearMarks(); }
+
+  function showError(text, field) {
+    elMsg.classList.remove("ok");
+    elMsg.textContent = text;
+    clearMarks();
+    if (field) { field.classList.add("bad"); if (field.focus) field.focus(); }
+    elWrap.classList.remove("shake");
+    void elWrap.offsetWidth;
+    elWrap.classList.add("shake");
+  }
+
+  function goStep(n) {
+    step = n;
+    $("p1").classList.toggle("on", n === 1);
+    $("p2").classList.toggle("on", n === 2);
+    $("st1").className = "st " + (n === 1 ? "on" : "done");
+    $("st2").className = "st " + (n === 2 ? "on" : "");
+    elAbort.textContent = n === 1 ? "Keluar" : "Kembali";
+    elRegText.textContent = n === 1 ? "Lanjut" : "Daftar";
+    elNote.textContent = n === 1 ? NOTE1 : NOTE2;
+    elTitle.textContent = n === 1 ? "Buat akun baru" : "Data karakter";
+    renderSub();
+    clearError();
+    (n === 1 ? elPass : elDd).focus();
+  }
+
+  function renderSub() {
+    elSub.innerHTML = "";
+    if (step === 1) {
+      if (subName) {
+        elSub.appendChild(document.createTextNode("Mendaftar sebagai "));
+        var b = document.createElement("b"); b.textContent = subName; elSub.appendChild(b);
+        elSub.appendChild(document.createTextNode(". Buat password untuk mulai bermain."));
+      } else elSub.textContent = "Akunmu belum terdaftar. Buat password untuk mulai bermain.";
+    } else elSub.textContent = "Isi tanggal lahir dan gender karaktermu.";
+  }
+
+  /* ---------- Kekuatan password ---------- */
+  function score(pw) {
+    if (!pw) return 0;
+    var s = 0;
+    if (pw.length >= MIN_LEN) s++;
+    if (pw.length >= 10 && /[A-Z]/.test(pw) && /[a-z]/.test(pw)) s++;
+    if (pw.length >= 8 && /\d/.test(pw) && /[A-Za-z]/.test(pw) && /[_\[\]()]|[A-Z]/.test(pw)) s++;
+    return Math.max(s, pw.length ? 1 : 0);
+  }
+  function renderStrength() {
+    var s = score(elPass.value), names = ["Kekuatan", "Lemah", "Cukup", "Kuat"];
+    for (var i = 0; i < 3; i++) elBars[i].className = i < s ? "s" + s : "";
+    elStrength.textContent = names[s];
+  }
+
+  /* ---------- Validasi ---------- */
+  function validPass() {
+    var pw = elPass.value, pw2 = elPass2.value;
+    if (!pw) { showError("Password belum diisi.", elPass); return false; }
+    if (pw.length < MIN_LEN) { showError("Password minimal " + MIN_LEN + " karakter.", elPass); return false; }
+    if (!VALID.test(pw)) { showError("Hanya boleh A-Z, a-z, 0-9, _, [ ], ( ).", elPass); return false; }
+    if (!pw2) { showError("Ulangi password dulu.", elPass2); return false; }
+    if (pw !== pw2) { showError("Password tidak sama.", elPass2); return false; }
+    return true;
+  }
+
+  function pad(n, l) { n = String(n); while (n.length < l) n = "0" + n; return n; }
+
+  function validDob() {
+    var d = parseInt(elDd.value, 10), m = parseInt(elMm.value, 10), y = parseInt(elYy.value, 10);
+    var cy = new Date().getFullYear();
+    if (isNaN(d) || isNaN(m) || isNaN(y)) { showError("Tanggal lahir belum lengkap.", isNaN(d) ? elDd : (isNaN(m) ? elMm : elYy)); return null; }
+    if (y < 1900 || y > cy) { showError("Tahun lahir tidak valid (1900-" + cy + ").", elYy); return null; }
+    if (m < 1 || m > 12) { showError("Bulan harus 1-12.", elMm); return null; }
+    var leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+    var days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m - 1];
+    if (d < 1 || d > days) { showError("Tanggal harus 1-" + days + " untuk bulan itu.", elDd); return null; }
+    return pad(d, 2) + "/" + pad(m, 2) + "/" + pad(y, 4);
+  }
+
+  function validGender() {
+    if (gender !== 1 && gender !== 2) {
+      showError("Pilih gender karaktermu.");
+      for (var i = 0; i < gBtns.length; i++) gBtns[i].classList.add("bad");
+      return false;
+    }
+    return true;
+  }
+
+  /* ---------- Kirim ---------- */
+  function next() {
+    if (busy) return;
+    clearError();
+    if (step === 1) { if (validPass()) goStep(2); return; }
+
+    var dob = validDob();
+    if (!dob || !validGender()) return;
+    /* jaga-jaga password masih benar (mis. field diubah lewat devtools) */
+    if (!validPass()) { goStep(1); return; }
+
+    setBusy(true);
+    /* Jika server tidak membalas dalam 8 detik, jangan menggantung selamanya */
+    timer = setTimeout(function () {
+      setBusy(false);
+      showError("Server tidak membalas. Coba lagi.");
+    }, 8000);
+
+    var payload = elPass.value + "|" + dob + "|" + gender;   /* '|' tidak mungkin ada di password valid */
+    if (hasCef) window.cef.emit("reg:submit", payload);
+    else setTimeout(function () { onResult(1, 0); }, 700);   /* simulasi browser */
+  }
+
+  function back() {
+    if (step === 2) { goStep(1); return; }
+    if (hasCef) window.cef.emit("reg:abort");
+    else elMsg.textContent = "(simulasi) server akan mengeluarkan pemain.";
+  }
+
+  /* Dari server: reg:init(namaPemain) -- argumen opsional */
+  function onInit(name) {
+    if (name) subName = String(name).replace(/_/g, " ");
+    renderSub();
+    if (step === 1) elPass.focus();
+  }
+
+  /* Dari server: reg:result(ok, kode)
+     ok=1 berhasil | ok=0, kode: 1=password pendek, 2=karakter tidak valid, 3=gagal umum, 4=tanggal lahir salah, 5=gender salah */
+  function onResult(ok, code) {
+    setBusy(false);
+    if (parseInt(ok, 10) === 1) {
+      elMsg.classList.add("ok");
+      elMsg.textContent = "Akun berhasil dibuat. Menyiapkan karaktermu...";
+      elReg.disabled = true; elAbort.disabled = true;
+      allInputs.forEach(function (i) { i.disabled = true; });
+      for (var i = 0; i < gBtns.length; i++) gBtns[i].disabled = true;
+      /* Lepas kendali mouse dan keyboard ke game, lalu sembunyikan halaman */
+      setTimeout(function () {
+        if (hasCef) { window.cef.set_focus(false); window.cef.hide(true); }
+      }, 800);
+      return;
+    }
+    var c = parseInt(code, 10);
+    if (c === 1) { goStep(1); showError("Password minimal " + MIN_LEN + " karakter.", elPass); }
+    else if (c === 2) { goStep(1); showError("Hanya boleh A-Z, a-z, 0-9, _, [ ], ( ).", elPass); }
+    else if (c === 4) { goStep(2); showError("Tanggal lahir tidak valid.", elDd); }
+    else if (c === 5) { goStep(2); validGender(); }
+    else showError("Pendaftaran gagal. Coba lagi.");
+  }
+
+  /* ---------- Event ---------- */
+  elReg.addEventListener("click", next);
+  elAbort.addEventListener("click", back);
+  elPass.addEventListener("input", function () { renderStrength(); clearError(); });
+  elPass2.addEventListener("input", clearError);
+  elPass.addEventListener("keydown", function (e) { if (e.key === "Enter") elPass2.focus(); });
+  elPass2.addEventListener("keydown", function (e) { if (e.key === "Enter") next(); });
+
+  /* Kolom tanggal: angka saja, loncat otomatis ke kolom berikutnya */
+  function digits(el, nextEl) {
+    el.addEventListener("input", function () {
+      el.value = el.value.replace(/\D/g, "");
+      clearError();
+      if (nextEl && el.value.length >= el.maxLength) nextEl.focus();
+    });
+    el.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { if (nextEl) nextEl.focus(); else next(); }
+      if (e.key === "Backspace" && !el.value && el.__prev) el.__prev.focus();
+    });
+  }
+  elMm.__prev = elDd; elYy.__prev = elMm;
+  digits(elDd, elMm); digits(elMm, elYy); digits(elYy, null);
+
+  for (var gi = 0; gi < gBtns.length; gi++) {
+    gBtns[gi].addEventListener("click", function () {
+      gender = parseInt(this.getAttribute("data-g"), 10);
+      for (var k = 0; k < gBtns.length; k++) gBtns[k].classList.toggle("sel", gBtns[k] === this);
+      clearError();
+    });
+  }
+
+  elToggle.addEventListener("click", function () {
+    var show = elPass.type === "password";
+    elPass.type = show ? "text" : "password";
+    elPass2.type = elPass.type;
+    elToggle.classList.toggle("on", show);
+    elToggle.setAttribute("aria-label", show ? "Sembunyikan password" : "Tampilkan password");
+    elPass.focus();
+  });
+
+  if (hasCef) {
+    window.cef.set_focus(true);
+    window.cef.on("reg:init", onInit);
+    window.cef.on("reg:result", onResult);
+    window.cef.emit("reg:ready");
+  } else {
+    onInit("Nama_Pemain");
+    elNote.textContent = "Mode simulasi di browser. Pendaftaran selalu berhasil.";
+    NOTE1 = NOTE2 = elNote.textContent;
+  }
+})();
+</script>
+</body>
+</html>

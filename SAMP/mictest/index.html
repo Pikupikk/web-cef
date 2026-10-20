@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tes Mikrofon</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: transparent; font: 15px/1.5 "Segoe UI", system-ui, sans-serif; color: #17222d; }
+  .card { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(460px, 92vw);
+          background: #fff; border-radius: 18px; padding: 22px; box-shadow: 0 14px 40px rgba(10,25,40,.35); }
+  h1 { margin: 0 0 12px; font-size: 20px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid #e6ebf0; font-size: 14px; }
+  .row b { font-weight: 600; } .ok { color: #178273; } .bad { color: #d9432f; } .wait { color: #8a6d00; }
+  .meter { height: 12px; border-radius: 8px; background: #e6ebf0; margin: 14px 0 4px; overflow: hidden; }
+  .meter i { display: block; height: 100%; width: 0; background: #1fa592; transition: width .06s; }
+  .hint { font-size: 12.5px; color: #5d6c7c; margin: 4px 0 14px; }
+  .btns { display: flex; gap: 10px; }
+  button { font: inherit; border: 0; border-radius: 12px; padding: 11px 16px; cursor: pointer; font-weight: 600; }
+  .p { background: #1fa592; color: #fff; flex: 1; } .s { background: #eef2f6; color: #17222d; }
+  select { width: 100%; font: inherit; font-size: 13px; padding: 8px 10px; border-radius: 10px; border: 1px solid #d5dde5; background: #f3f6f9; color: #17222d; margin: 2px 0 8px; }
+  label { display: block; font-size: 12px; color: #5d6c7c; margin-top: 6px; }
+  pre { margin: 10px 0 0; padding: 10px; background: #f3f6f9; border-radius: 10px; font-size: 12px; white-space: pre-wrap; max-height: 110px; overflow: auto; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Tes Mikrofon di CEF</h1>
+  <div class="row"><span>Secure context</span><b id="r_sec" class="wait">...</b></div>
+  <div class="row"><span>API mikrofon (getUserMedia)</span><b id="r_api" class="wait">...</b></div>
+  <div class="row"><span>Izin / akses mikrofon</span><b id="r_mic" class="wait">...</b></div>
+  <div class="row"><span>Perangkat input</span><b id="r_dev" class="wait">...</b></div>
+  <div class="row"><span>WebAudio + suara keluar</span><b id="r_out" class="wait">...</b></div>
+  <div class="row"><span>WebSocket</span><b id="r_ws" class="wait">...</b></div>
+  <label for="selIn">Mikrofon (input)</label><select id="selIn"><option>(klik "Minta izin mikrofon" dulu)</option></select>
+  <label for="selOut">Speaker / headset (output)</label><select id="selOut"><option>(klik "Minta izin mikrofon" dulu)</option></select>
+  <div class="meter"><i id="lvl"></i></div>
+  <div class="hint">Bicara ke mikrofon, bar hijau harus bergerak. Kalau muncul permintaan izin, setujui.</div>
+  <div class="btns">
+    <button class="p" id="bMic">Minta izin mikrofon</button>
+    <button class="s" id="bBeep">Bunyi tes</button>
+    <button class="s" id="bClose">Tutup</button>
+  </div>
+  <pre id="log"></pre>
+</div>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var logEl = $("log"), results = {};
+  function log(t) { logEl.textContent += t + "\n"; logEl.scrollTop = logEl.scrollHeight; }
+  function set(id, ok, text) { var e = $("r_" + id); e.textContent = text; e.className = ok ? "ok" : "bad"; results[id] = ok ? "ok" : "gagal(" + text + ")"; }
+  function report() { if (window.cef) window.cef.emit("mic:result", JSON.stringify(results)); }
+  window.onerror = function (m) { log("ERROR: " + m); };
+
+  set("sec", window.isSecureContext, window.isSecureContext ? "ya" : "TIDAK (butuh https atau localhost)");
+  var hasApi = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  set("api", hasApi, hasApi ? "ada" : "tidak ada");
+  log("UA: " + navigator.userAgent);
+
+  var ac = null, stream = null, rafOn = false;
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
+  function audioCtx() { if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === "suspended") ac.resume(); return ac; }
+
+  function applyOutput(id) {
+    var c = audioCtx();
+    if (!c.setSinkId) { log("setSinkId tidak didukung di CEF ini (output ikut default Windows)."); return Promise.resolve(); }
+    return c.setSinkId(id || "").then(function () { log("Output: " + ($("selOut").selectedOptions[0] || {}).text); })
+      .catch(function (e) { log("Output gagal: " + e.name); });
+  }
+
+  $("bBeep").onclick = function () {
+    try {
+      var c = audioCtx(), o = c.createOscillator(), g = c.createGain();
+      o.frequency.value = 660; g.gain.value = 0.15; o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + 0.4);
+      set("out", true, "ada (kamu dengar bunyi?)"); report();
+    } catch (e) { set("out", false, e.name || "error"); log("Beep: " + e); report(); }
+  };
+
+  function fillDevices() {
+    return navigator.mediaDevices.enumerateDevices().then(function (d) {
+      var ins = d.filter(function (x) { return x.kind === "audioinput"; });
+      var outs = d.filter(function (x) { return x.kind === "audiooutput"; });
+      var curIn = (stream && stream.getAudioTracks()[0] && stream.getAudioTracks()[0].getSettings().deviceId) || store("vc_in") || "";
+      var curOut = store("vc_out") || "";
+      function fill(sel, list, cur) {
+        sel.innerHTML = "";
+        list.forEach(function (x, i) {
+          var o = document.createElement("option");
+          o.value = x.deviceId; o.textContent = x.label || ("Perangkat " + (i + 1));
+          if (x.deviceId === cur) o.selected = true;
+          sel.appendChild(o);
+        });
+      }
+      fill($("selIn"), ins, curIn); fill($("selOut"), outs, curOut);
+      set("dev", ins.length > 0, ins.length + " input, " + outs.length + " output");
+      report();
+    });
+  }
+
+  function startMic(deviceId) {
+    if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
+    var constraints = { audio: { echoCancellation: true, noiseSuppression: true } };
+    if (deviceId) constraints.audio.deviceId = { exact: deviceId };
+    return navigator.mediaDevices.getUserMedia(constraints).then(function (st) {
+      stream = st;
+      set("mic", true, "diizinkan");
+      var t = st.getAudioTracks()[0];
+      log("Mic aktif: " + (t && t.label));
+      var c = audioCtx(), src = c.createMediaStreamSource(st), an = c.createAnalyser();
+      an.fftSize = 512; src.connect(an);
+      var buf = new Uint8Array(an.fftSize);
+      var mine = st;
+      (function loop() {
+        if (mine !== stream) return;                 // stream diganti, hentikan loop lama
+        an.getByteTimeDomainData(buf);
+        var peak = 0; for (var i = 0; i < buf.length; i++) peak = Math.max(peak, Math.abs(buf[i] - 128));
+        $("lvl").style.width = Math.min(100, peak / 128 * 220) + "%";
+        requestAnimationFrame(loop);
+      })();
+      return fillDevices();
+    });
+  }
+
+  $("bMic").onclick = function () {
+    if (!hasApi) { log("getUserMedia tidak tersedia."); report(); return; }
+    startMic(store("vc_in") || "").catch(function (e) {
+      if (store("vc_in")) { store("vc_in", ""); return startMic(""); }   // perangkat tersimpan sudah hilang
+      throw e;
+    }).then(function () { return applyOutput(store("vc_out")); })
+      .catch(function (e) { set("mic", false, e.name || "error"); log("Mic: " + e.name + " - " + e.message); report(); });
+  };
+
+  $("selIn").onchange = function () {
+    store("vc_in", this.value);
+    startMic(this.value).catch(function (e) { set("mic", false, e.name || "error"); log("Mic: " + e.name + " - " + e.message); report(); });
+  };
+  $("selOut").onchange = function () { store("vc_out", this.value); applyOutput(this.value); };
+
+  // Tes WebSocket (ke relay lokal bawaan DestroyerDarkNess; ganti URL kalau perlu)
+  var WS_URL = "ws://localhost:8000";
+  try {
+    var ws = new WebSocket(WS_URL);
+    ws.onopen = function () { set("ws", true, "tersambung ke " + WS_URL); ws.close(); report(); };
+    ws.onerror = function () { set("ws", false, "gagal ke " + WS_URL + " (normal kalau relay belum jalan)"); report(); };
+  } catch (e) { set("ws", false, e.name || "error"); }
+
+  $("bClose").onclick = function () { if (window.cef) { window.cef.emit("mic:close"); } };
+  if (window.cef) { window.cef.set_focus(true); window.cef.emit("mic:ready"); }
+})();
+</script>
+</body>
+</html>
