@@ -264,6 +264,7 @@ $("givecancel").onclick=function(){$("givebox").style.display="none"};
 $("dropbtn").onclick=function(){if(sel)drop(sel.z,sel.i,+$("qty").value||1)};
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape")close(true);
+  if((e.key==="i"||e.key==="I")&&!e.repeat&&document.activeElement.tagName!=="INPUT")close(true);   /* I = buka (keybind CEF) sekaligus tutup */
   if(e.key>="1"&&e.key<="5"&&document.activeElement.tagName!=="INPUT"){sel={z:"hot",i:+e.key-1};use();render()}
 });
 

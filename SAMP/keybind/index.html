@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><title>Keybind</title>
+<style>html,body{margin:0;height:100%;background:transparent;overflow:hidden}</style></head>
+<body>
+<script>
+/* Keybind listener (browser CEF tak terlihat, tidak ambil fokus).
+   Server memanggil cef_always_listen_keys(playerid, CEF_KEY_ID, true) -> tombol sampai ke sini
+   walau game yang fokus, jadi tidak terbatas tombol bawaan GTA (KEY_YES / KEY_NO dst).
+
+   BINDS: event.code -> nama aksi. Pakai event.code (posisi tombol fisik), bukan event.key,
+   supaya tetap jalan di layout keyboard apa pun. Daftar kode: KeyA..KeyZ, Digit0..Digit9,
+   F1..F12, Numpad0..Numpad9, Insert, Delete, Home, End, PageUp, PageDown, ArrowUp, dst.
+   Nama aksi dibaca server di OnKbPress (controllers/keybind/CEF_Keybind.pwn). */
+var BINDS = {
+  "KeyI": "inv"
+  // "KeyP": "phone",
+  // "F5":   "contoh"
+};
+
+var HAS = (typeof cef !== "undefined");
+var last = 0;
+function emit(a){
+  if(HAS){ try{ cef.emit("key:press", a); }catch(e){} }
+  else console.log("[key:press]", a);
+}
+addEventListener("keydown", function(e){
+  if(e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
+  var a = BINDS[e.code];
+  if(!a) return;
+  var t = Date.now();
+  if(t - last < 150) return;        // anti spam
+  last = t;
+  emit(a);
+});
+</script>
+</body></html>
