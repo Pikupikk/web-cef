@@ -15,10 +15,11 @@
    DEBUG = true -> tombol terakhir yang diterima ditampilkan di pojok kiri atas layar game
    (untuk cek apakah tombol benar-benar sampai & apa isi key/code/keyCode-nya). Matikan kalau sudah beres. */
 var DEBUG = false;
+/* Aturan: tiap baris diakhiri koma, termasuk yang terakhir. Baris tanpa koma = script error = semua tombol mati. */
 var BINDS = {
-  "i": "inv"
+  "i": "inv",
   "p": "phone",
-  // "f5": "contoh"
+  // "f5": "contoh",
 };
 var KC = {73:"i", 80:"p"};   // cadangan terakhir: keyCode -> nama (tambah sesuai kebutuhan: 80:"p", 116:"f5", ...)
 
