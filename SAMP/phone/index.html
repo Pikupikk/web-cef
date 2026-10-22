@@ -111,11 +111,34 @@ background-image:radial-gradient(120% 60% at 95% 22%,#ff6a1f 0,transparent 55%),
 .car .ci{width:44px;height:44px;border-radius:12px;background:#2c2c2e;display:grid;place-items:center;flex:none}.car .ci svg{fill:#0a84ff}
 .plate{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.8px;background:#f5f5f0;color:#111;border-radius:4px;padding:1px 6px;margin-right:6px}
 .tag{font-size:11px;padding:3px 9px;border-radius:9px;background:#30d15833;color:#30d158;font-weight:600;flex:none}.tag.x{background:#ff9f0a33;color:#ff9f0a}.tag.r{background:#ff453a33;color:#ff453a}
+/* lokasi kendaraan & kontak */
+.car .loc{white-space:normal;color:#aeaeb2;margin-top:3px;font-size:12.5px;line-height:1.3}
+.trk{display:inline-block;margin-top:7px;font-size:12px;font-weight:600;color:#0a84ff;background:#0a84ff22;border-radius:10px;padding:4px 11px;cursor:pointer}.trk:active{filter:brightness(.8)}
+.kac{display:flex;gap:8px;flex:none}.kac i{width:34px;height:34px;border-radius:50%;background:#e9e9ef;display:grid;place-items:center;cursor:pointer;font-style:normal}.kac i:active{background:#d1d1d6}.kac svg{fill:#0a84ff}
+.delb{color:#ff3b30;font-size:14px;font-weight:600;padding:6px 4px 6px 10px;cursor:pointer;flex:none}.delb:active{opacity:.5}
 .toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%);background:#000c;color:#fff;padding:8px 16px;border-radius:16px;font-size:12.5px;z-index:90}
+/* status pesan */
+.b.fail{background:linear-gradient(#ff5a50,#e0352b)}.b.fail{cursor:pointer}
+.dl.err{color:#ff3b30;font-weight:500;text-align:right;max-width:80%}
+/* pengaturan */
+.pf{display:flex;align-items:center;gap:14px;background:#fff;margin:2px 14px 16px;border-radius:12px;padding:12px 14px;color:#000}.pf .av{width:58px;height:58px;font-size:24px}.pf b{font-size:17px}
+.sg{background:#fff;margin:0 14px 16px;border-radius:12px;overflow:hidden;color:#000}
+.sr{display:flex;align-items:center;gap:12px;padding:8px 14px;font-size:15px;border-bottom:1px solid #eee;min-height:46px}.sr:last-child{border:0}
+.sri{width:29px;height:29px;border-radius:7px;display:grid;place-items:center;flex:none}.sri svg{fill:#fff}
+.sv{color:#8e8e93;margin-left:auto;font-size:15px;white-space:nowrap}.sv.low{color:#ff3b30;font-weight:600}
+.sw{margin-left:auto;width:51px;height:31px;border-radius:16px;background:#e9e9ea;position:relative;cursor:pointer;transition:background .2s;flex:none}.sw:after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 5px #0004;transition:transform .2s}.sw.on{background:#34c759}.sw.on:after{transform:translateX(20px)}
+.ft{margin:-8px 28px 16px;font-size:12px;color:#6c6c70;line-height:1.35}
+/* airdrop */
+.rdr{position:relative;height:178px;display:grid;place-items:center;flex:none;color:#fff}
+.rdr i{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;border:2px solid #0a84ff;opacity:0;animation:rp 3s infinite;font-style:normal}.rdr i:nth-child(2){animation-delay:1s}.rdr i:nth-child(3){animation-delay:2s}
+@keyframes rp{0%{transform:scale(.7);opacity:.8}100%{transform:scale(2.7);opacity:0}}
+.rdr .core{position:relative;z-index:2;width:64px;height:64px;border-radius:50%;background:linear-gradient(#58c8ff,#0a7cff);display:grid;place-items:center;box-shadow:0 6px 22px #0a84ff66}
+.adn{margin:0 28px 4px;font-size:12px;color:#8e8e93;text-align:center;line-height:1.35}
+.trk.sm{margin:0}
 </style></head><body>
 <div id="ph" class="off"><div id="scr">
  <div id="isl"></div>
- <div id="sb"><span id="clk">09:41</span><span class="r"><svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.7" y="5" width="3" height="6" rx="1"/><rect x="9.4" y="2.5" width="3" height="8.5" rx="1"/><rect x="14" y="0" width="3" height="11" rx="1"/></svg><span style="font-size:12px">5G</span><span class="bat"></span></span></div>
+ <div id="sb"><span id="clk">09:41</span><span class="r"><svg id="pln" style="display:none" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg><svg id="sig" width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.7" y="5" width="3" height="6" rx="1"/><rect x="9.4" y="2.5" width="3" height="8.5" rx="1"/><rect x="14" y="0" width="3" height="11" rx="1"/></svg><span id="net" style="font-size:12px">5G</span><span class="bat"></span></span></div>
  <div id="nt" class="nt"></div>
  <div id="home"><div class="grid" id="grid"></div><div class="dock" id="dock"></div></div>
  <div id="app"></div>
@@ -126,18 +149,27 @@ background-image:radial-gradient(120% 60% at 95% 22%,#ff6a1f 0,transparent 55%),
 (function(){'use strict';
 /* ===== KONTRAK DENGAN PAWN (cef.emit -> Pawn / cef_emit_event <- Pawn; isi = JSON string) =====
  Pawn -> halaman:
-  phone:open      {name,number,bank:{name,no,balance,hist:[{t,amt,ts}]}}
+  phone:open      {name,number,credit,air,bank:{name,no,balance,hist:[{t,amt,ts}]}}
   phone:close
   phone:bank      {name,no,balance,hist:[...]}
   phone:sms_all   {"08123":{name,unread,msgs:[{m:"me|them",t,ts}]}}    (history dari database)
   phone:sms_in    {from,name,text,ts}
   phone:calls     [{name,num,type:"out|in|miss",ts}]                    (opsional)
-  phone:cars      [{model,plate,state,loc}]
+  phone:cars      [{id,model,plate,state,loc,dist}]    (id = id database kendaraan, dist = jarak meter)
+  phone:contacts  {book:0|1,list:[{name,number}]}       (isi phonebook; book:0 = tidak punya item phonebook)
   phone:incoming  {name,number} | phone:connected | phone:ended {text?}
   phone:tf_result {ok,msg,balance}
+  phone:saved     {list:[{name,number}]}                                (kontak tersimpan di database, tabel phone_contacts)
+  phone:contact_err {msg}
+  phone:sms_result {to,ok,msg,credit}    (hasil kirim SMS: ok:1 = terkirim, ok:0 = gagal + alasan di msg)
+  phone:settings  {number,credit,air}    (app Pengaturan; air:1 = mode pesawat)
+  phone:airdrop   {range,list:[{id,dist}]} (pemain terdekat, HANYA id + jarak meter, tanpa nama)
+  phone:airdrop_res {ok,msg}
  Halaman -> Pawn:
-  phone:call "nomor" | phone:answer | phone:hangup | phone:sms {to,text} | phone:transfer {to,amount,note}
-  phone:cmd "gps"|"mypv" | phone:cars "" | phone:close ""
+  phone:call "nomor" | phone:answer | phone:hangup | phone:sms "nomor|teks" | phone:transfer "rekening|nominal|catatan"
+  phone:cmd "gps"|"mypv" | phone:cars "" | phone:contacts "" | phone:track "idKendaraan" | phone:close "" | phone:read "nomorPengirim" | phone:contact_add "nomor|nama" | phone:contact_del "nomor"
+  phone:settings "" | phone:airplane "1"|"0" | phone:airdrop_scan "" | phone:airdrop_save "idPemain|nama"
+  CATATAN: setelah phone:cmd JANGAN kirim phone:close lagi. Pawn yang menutup/destroy browser (lewat timer).
   (ts boleh detik unix atau milidetik, otomatis dikenali) */
 var $=function(i){return document.getElementById(i)};
 function E(e,a){if(window.cef)window.cef.emit(e,a==null?'':(typeof a=='string'?a:JSON.stringify(a)))}
@@ -169,19 +201,25 @@ list:"M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7
 check:"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z",
 srch:"M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z",
 arrin:"M9 5v2h6.59L4 18.59 5.41 20 17 8.41V15h2V5z",
-mgo:"M20 5.41L18.59 4 7 15.59V9H5v10h10v-2H8.41z"};
-function ic(n,s){var e=h('span');e.style.display='inline-flex';e.innerHTML='<svg viewBox="0 0 24 24" width="'+(s||22)+'" height="'+(s||22)+'"><path d="'+P[n]+'"/></svg>';return e}
+mgo:"M20 5.41L18.59 4 7 15.59V9H5v10h10v-2H8.41z",
+uadd:"M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"};
+P.gear="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z";
+P.plane="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z";
+P.air='<circle cx="12" cy="12.5" r="2.4" fill="currentColor"/><path d="M8.2 16.3a5.4 5.4 0 010-7.6M15.8 8.7a5.4 5.4 0 010 7.6M5.4 19a9.4 9.4 0 010-13M18.6 6a9.4 9.4 0 010 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>';
+function ic(n,s){var e=h('span');e.style.display='inline-flex';e.innerHTML='<svg viewBox="0 0 24 24" width="'+(s||22)+'" height="'+(s||22)+'">'+(P[n].charAt(0)=='<'?P[n]:'<path d="'+P[n]+'"/>')+'</svg>';return e}
 var now=Date.now(),H=36e5;
 var S={name:'Leonardo Sepile',number:'081234',bank:{name:'Leonardo Sepile',no:'7701-2209',balance:2450000,hist:[{t:'Gaji Pemerintah',amt:350000,ts:now-5*H},{t:'Transfer ke Rina',amt:-125000,ts:now-27*H},{t:'Transfer dari Dimas',amt:500000,ts:now-52*H}]},
  convs:{'081777':{name:'Rina',unread:1,msgs:[{m:'them',t:'Bro, jadi ketemu di bank nanti?',ts:now-26*H},{m:'me',t:'Jadi, jam 8 ya',ts:now-26*H+6e4},{m:'them',t:'Oke, aku bawa kendaraan sendiri',ts:now-25*H},{m:'me',t:'Siap, sampai ketemu 👍',ts:now-3*H},{m:'them',t:'Aku sudah di depan bank ya',ts:now-6e4*4}]},
  '081555':{name:'Dimas',unread:0,msgs:[{m:'them',t:'Uangnya sudah aku transfer ya',ts:now-52*H},{m:'me',t:'Sudah masuk, makasih!',ts:now-51*H}]}},
  calls:[{name:'Rina',num:'081777',type:'miss',ts:now-2*H},{name:'Dimas',num:'081555',type:'out',ts:now-30*H},{name:'Rina',num:'081777',type:'in',ts:now-50*H}],
- cars:[{model:'Infernus',plate:'B 1234 OT',state:'Spawn',loc:'Los Santos'},{model:'Sultan',plate:'D 5521 RP',state:'Disimpan',loc:'Garasi Idlewood'}]};
+ cars:[{id:1,model:'Infernus',plate:'B 1234 OT',state:'Spawn',loc:'Downtown Los Santos',dist:320},{id:2,model:'Sultan',plate:'D 5521 RP',state:'Disimpan',loc:'Idlewood',dist:2450}],
+ cm:{},saved:[],kedit:0,book:1,kq:'',contacts:[{name:'Rina Putri',number:'081777'},{name:'Dimas Aditya',number:'081555'},{name:'Budi Santoso',number:'081999'}]};
+S.air=0;S.credit=12;S.airRange=15;S.near=window.cef?[]:[{id:12,dist:4},{id:37,dist:9},{id:5,dist:13}];
 var cur='',tmr=null,cs=0,callOn=false,callRec=null,curThread='',dial='',lastTf=null,hide=false,ntT=null;
 /* ---------- HOME ---------- */
-var APPS=[['tel','Telepon','phone','linear-gradient(#5be26d,#1fb53c)'],['sms','Pesan','msg','linear-gradient(#5be26d,#1fb53c)'],['bank','Bank','bank','linear-gradient(#3da0ff,#0a5fd8)'],['gps','GPS','nav','linear-gradient(#ffb340,#ff7a00)'],['pv','Kendaraan','car','linear-gradient(#7d7aff,#4b3fd0)']];
+var APPS=[['tel','Telepon','phone','linear-gradient(#5be26d,#1fb53c)'],['sms','Pesan','msg','linear-gradient(#5be26d,#1fb53c)'],['bank','Bank','bank','linear-gradient(#3da0ff,#0a5fd8)'],['gps','GPS','nav','linear-gradient(#ffb340,#ff7a00)'],['kon','Kontak','user','linear-gradient(#a1a1a6,#636366)'],['pv','Kendaraan','car','linear-gradient(#7d7aff,#4b3fd0)'],['air','AirDrop','air','linear-gradient(#58c8ff,#0a7cff)'],['set','Pengaturan','gear','linear-gradient(#a8a8ae,#48484a)']];
 function unread(){var n=0;for(var k in S.convs)n+=S.convs[k].unread||0;return n}
-function mk(a){var d=h('div','ic'),i=h('i');i.style.background=a[3];i.appendChild(ic(a[2],30));if(a[0]=='sms'){var u=unread();if(u){var b=h('em','bdg',u>99?'99+':u);i.appendChild(b)}}d.appendChild(i);d.appendChild(h('span',null,a[1]));d.onclick=function(){openApp(a[0])};return d}
+function mk(a){var d=h('div','ic'),i=h('i');i.style.background=a[3];i.appendChild(ic(a[2],30));if(a[0]=='sms'){var u=unread();if(u){var b=h('em','bdg',u>10?'10+':u);i.appendChild(b)}}d.appendChild(i);d.appendChild(h('span',null,a[1]));d.onclick=function(){openApp(a[0])};return d}
 function home(){$('grid').innerHTML='';$('dock').innerHTML='';APPS.forEach(function(a){$('grid').appendChild(mk(a))});['tel','sms','bank','gps'].forEach(function(k){$('dock').appendChild(mk(APPS.filter(function(a){return a[0]==k})[0]))})}
 function tick(){$('clk').textContent=hm(Date.now())}setInterval(tick,10000);tick();
 function show(b){$('ph').classList.toggle('off',!b);if(b)home();else{closeApp(true);if(callOn&&false)return}}
@@ -195,15 +233,21 @@ function hd(a,title,o){o=o||{};var d=h('div','hd'),l=h('div'),r=h('div','hr');if
  var m=h('div','hm');if(title&&title.nodeType)m.appendChild(title);else m.textContent=title||'';if(o.right)r.appendChild(o.right);d.appendChild(l);d.appendChild(m);d.appendChild(r);a.appendChild(d);return d}
 function body(a){var b=h('div','body');a.appendChild(b);return b}
 function rbtn(icon,f,txt){var r=h('div','rb');if(icon)r.appendChild(ic(icon,22));if(txt)r.appendChild(h('span',null,txt));r.onclick=f;return r}
-function openApp(id){if(id=='gps'){E('phone:cmd','gps');if(window.cef){show(false);E('phone:close')}else toast('→ /gps');return}
- if(id=='tel')tel(dial?'pad':'rec');else if(id=='sms')smsList();else if(id=='bank')bank();else if(id=='pv'){pv();E('phone:cars')}}
-function nameOf(n){return S.convs[n]?S.convs[n].name:n}
+/* Kirim command ke Pawn (/gps, /mypv). HANYA phone:cmd: Pawn melepas fokus, destroy browser HP, lalu menjalankan command.
+   Jangan kirim phone:close sesudahnya -> event kedua ke browser yang sedang di-destroy bikin crash. */
+function sysCmd(c){E('phone:cmd',c);if(window.cef)show(false);else toast('→ /'+c)}
+function openApp(id){if(id=='gps'){sysCmd('gps');return}
+ if(id=='tel')tel(dial?'pad':'rec');else if(id=='sms')smsList();else if(id=='bank')bank();else if(id=='pv'){pv();E('phone:cars')}else if(id=='kon'){S.kq='';kon();E('phone:contacts')}else if(id=='set'){setApp();E('phone:settings')}else if(id=='air'){air();E('phone:airdrop_scan')}}
+function nameOf(n){return S.cm[n]||(S.convs[n]?S.convs[n].name:n)}
+function cname(n){return S.cm[n]||n}
+function allNums(){var o={},k;for(k in S.cm)o[k]=1;for(k in S.convs)o[k]=1;return Object.keys(o)}
+function byName(x,y){var a=String(x.name).toLowerCase(),b=String(y.name).toLowerCase();return a>b?1:a<b?-1:0}
 function init(n){return (n||'?').toString().charAt(0).toUpperCase()}
 /* ---------- TELEPON ---------- */
 function tel(tab){var a=scr('tel',false);hd(a,tab=='rec'?'Terbaru':tab=='con'?'Kontak':'',{back:'Beranda'});var b=body(a);
  if(tab=='rec'){if(!S.calls.length)b.appendChild(h('div','empty','Belum ada riwayat panggilan.'));S.calls.slice().sort(function(x,y){return y.ts-x.ts}).forEach(function(c){var r=h('div','crow'),i=h('div','in'),g=h('div','grow'),t=c.type=='miss'?'Tak terjawab':c.type=='in'?'Panggilan masuk':'Panggilan keluar';
   r.appendChild(h('div','av',init(c.name)));g.appendChild(h('b',c.type=='miss'?'miss':null,c.name));g.appendChild(h('div','sub',t));i.appendChild(g);i.appendChild(h('div','tm',day(c.ts)=='Hari ini'?hm(c.ts):day(c.ts)));r.appendChild(i);r.onclick=function(){startCall(c.num,c.name)};b.appendChild(r)})}
- else if(tab=='con'){var k=Object.keys(S.convs);if(!k.length)b.appendChild(h('div','empty','Belum ada kontak.'));k.sort(function(x,y){return S.convs[x].name>S.convs[y].name?1:-1}).forEach(function(n){var r=h('div','crow'),i=h('div','in'),g=h('div','grow');r.appendChild(h('div','av',init(S.convs[n].name)));g.appendChild(h('b',null,S.convs[n].name));g.appendChild(h('div','sub',n));i.appendChild(g);r.appendChild(i);r.onclick=function(){startCall(n,S.convs[n].name)};b.appendChild(r)})}
+ else if(tab=='con'){var k=allNums();if(!k.length)b.appendChild(h('div','empty','Belum ada kontak.'));k.sort(function(x,y){return byName({name:nameOf(x)},{name:nameOf(y)})}).forEach(function(n){var nm=nameOf(n),r=h('div','crow'),i=h('div','in'),g=h('div','grow');r.appendChild(h('div','av',init(nm)));g.appendChild(h('b',null,nm));g.appendChild(h('div','sub',n));i.appendChild(g);r.appendChild(i);r.onclick=function(){startCall(n,nm)};b.appendChild(r)})}
  else{var d=h('div','disp',dial);b.appendChild(d);var p=h('div','pad'),L={2:'ABC',3:'DEF',4:'GHI',5:'JKL',6:'MNO',7:'PQRS',8:'TUV',9:'WXYZ'};
   '123456789*0#'.split('').forEach(function(c){var k=h('div','k',c);k.appendChild(h('small',null,L[c]||''));k.onclick=function(){if(dial.length<12){dial+=c;d.textContent=dial}};p.appendChild(k)});
   p.appendChild(h('div'));var cl=h('div','cb green');cl.appendChild(ic('phone',32));cl.onclick=function(){if(dial)startCall(dial,nameOf(dial))};p.appendChild(cl);var x=h('div','del','⌫');x.onclick=function(){dial=dial.slice(0,-1);d.textContent=dial};p.appendChild(x);b.appendChild(p);b.style.paddingTop='6px'}
@@ -215,7 +259,7 @@ function callUI(name,num,status,inc){var c=$('call');c.innerHTML='';c.className=
   db.onclick=function(){E('phone:hangup');endCall('Panggilan ditolak')};yb.onclick=function(){E('phone:answer');if(callRec)callRec.type='in';connected(name,num)};r.appendChild(d);r.appendChild(y);c.appendChild(r);r.style.marginTop='0';q.style.marginTop='auto';return}
  var g=h('div','cg');[['Mute','mic'],['Keypad','pad'],['Speaker','spk'],['Tambah','add'],['FaceTime','vid'],['Kontak','user']].forEach(function(o){var w=h('div'),i=h('i');i.appendChild(ic(o[1],26));i.onclick=function(){i.classList.toggle('act')};w.appendChild(i);w.appendChild(h('span',null,o[0]));g.appendChild(w)});c.appendChild(g);
  var e=h('div','cb red');e.appendChild(ic('phone',32));e.style.transform='rotate(135deg)';e.onclick=function(){E('phone:hangup');endCall('Panggilan berakhir')};c.appendChild(e)}
-function startCall(num,name){if(callOn)return;callOn=true;callRec=addCall(name,num,'out');callUI(name,num,'memanggil...');E('phone:call',num);if(!window.cef)setTimeout(function(){connected(name,num)},1800)}
+function startCall(num,name){if(callOn)return;if(S.air){toast('Mode Pesawat aktif');return}callOn=true;callRec=addCall(name,num,'out');callUI(name,num,'memanggil...');E('phone:call',num);if(!window.cef)setTimeout(function(){connected(name,num)},1800)}
 function connected(name,num){callOn=true;callUI(name,num,'00:00');var av=document.querySelector('#call .av');if(av)av.classList.remove('pulse');cs=0;clearInterval(tmr);tmr=setInterval(function(){cs++;var s=$('cst');if(s)s.textContent=('0'+Math.floor(cs/60)).slice(-2)+':'+('0'+cs%60).slice(-2)},1000)}
 function endCall(t){clearInterval(tmr);var s=$('cst');if(s)s.textContent=t||'Panggilan berakhir';callOn=false;callRec=null;setTimeout(function(){$('call').className='';if(cur=='tel')tel('rec')},1000)}
 /* ---------- PESAN ---------- */
@@ -228,18 +272,29 @@ function smsList(q){var a=scr('sms',true);hd(a,'',{back:'Beranda',right:rbtn('ed
    r.appendChild(h('div','av',init(c.name)));l1.appendChild(h('b',null,c.name));l1.appendChild(tm);g.appendChild(l1);g.appendChild(h('div','sub',(l.m=='me'?'Kamu: ':'')+l.t));w.appendChild(g);if(c.unread)w.appendChild(h('div','dot'));r.appendChild(w);r.onclick=function(){smsThread(n)};box.appendChild(r)})}
  fill(q)}
 function smsNew(){var a=scr('new',true);hd(a,'Pesan Baru',{right:rbtn(null,function(){smsList()},'Batal')});var b=body(a),t=h('div','to');t.appendChild(h('span',null,'Kepada:'));var i=h('input');i.placeholder='Nomor telepon';i.inputMode='numeric';i.maxLength=12;i.onkeydown=function(e){e.stopPropagation();if(e.key=='Enter')go()};t.appendChild(i);b.appendChild(t);
- function go(){var n=i.value.replace(/\D/g,'');if(!n)return;if(!S.convs[n])S.convs[n]={name:n,unread:0,msgs:[]};smsThread(n)}
- b.appendChild(h('div','sec','Kontak'));Object.keys(S.convs).forEach(function(n){var r=h('div','mr'),w=h('div','in'),g=h('div','grow');r.appendChild(h('div','av',init(S.convs[n].name)));g.appendChild(h('b',null,S.convs[n].name));g.appendChild(h('div','sub',n));w.appendChild(g);r.appendChild(w);r.onclick=function(){smsThread(n)};b.appendChild(r)});setTimeout(function(){i.focus()},350)}
-function smsThread(n){var c=S.convs[n];if(!c)return;c.unread=0;curThread=n;var a=scr('th',true),ti=h('div','thh');ti.appendChild(h('div','av',init(c.name)));ti.appendChild(h('span',null,c.name));
- hd(a,ti,{back:'Pesan',fn:function(){curThread='';smsList()},right:rbtn('phone',function(){startCall(n,c.name)})});
+ function go(){var n=i.value.replace(/\D/g,'');if(!n)return;if(!S.convs[n])S.convs[n]={name:cname(n),unread:0,msgs:[]};smsThread(n)}
+ b.appendChild(h('div','sec','Kontak'));allNums().sort(function(x,y){return byName({name:nameOf(x)},{name:nameOf(y)})}).forEach(function(n){var nm=nameOf(n),r=h('div','mr'),w=h('div','in'),g=h('div','grow');r.appendChild(h('div','av',init(nm)));g.appendChild(h('b',null,nm));g.appendChild(h('div','sub',n));w.appendChild(g);r.appendChild(w);r.onclick=function(){if(!S.convs[n])S.convs[n]={name:nm,unread:0,msgs:[]};smsThread(n)};b.appendChild(r)});setTimeout(function(){i.focus()},350)}
+function smsThread(n){var c=S.convs[n];if(!c)return;if(c.unread>0)E('phone:read',String(n));c.unread=0;curThread=n;var a=scr('th',true),ti=h('div','thh');ti.appendChild(h('div','av',init(c.name)));ti.appendChild(h('span',null,c.name));
+ hd(a,ti,{back:'Pesan',fn:function(){curThread='';smsList()},right:thRight(n,c)});
  var b=h('div','body th');b.style.cssText='display:flex;flex-direction:column;justify-content:flex-start';a.appendChild(b);
  function draw(){b.innerHTML='';if(!c.msgs.length){b.appendChild(h('div','empty','Belum ada percakapan dengan '+c.name+'.'))}var ld='',lt=0;
   c.msgs.forEach(function(m,ix){var d=day(m.ts);if(d!=ld||m.ts-lt>36e5){var s=h('div','ds');var bb=h('b',null,d=='Hari ini'?'Hari ini':d);s.appendChild(bb);s.appendChild(document.createTextNode(' '+hm(m.ts)));b.appendChild(s);ld=d}lt=m.ts;
-   var nx=c.msgs[ix+1],pv=c.msgs[ix-1],tail=!nx||nx.m!=m.m||nx.ts-m.ts>12e4,gap=pv&&pv.m!=m.m&&d==ld;var x=h('div','b '+m.m+(tail?' tl':'')+(gap?' gap':''),m.t);x.appendChild(h('small',null,hm(m.ts)));b.appendChild(x)});
-  var lm=null;c.msgs.forEach(function(m){if(m.m=='me')lm=m});if(lm&&lm===last(c))b.appendChild(h('div','dl','Terkirim'));b.scrollTop=1e9}draw();
+   var nx=c.msgs[ix+1],pv=c.msgs[ix-1],tail=!nx||nx.m!=m.m||nx.ts-m.ts>12e4,gap=pv&&pv.m!=m.m&&d==ld;var x=h('div','b '+m.m+(tail?' tl':'')+(gap?' gap':'')+(m.st=='fail'?' fail':''),m.t);x.appendChild(h('small',null,hm(m.ts)));b.appendChild(x);
+   if(m.st=='fail'){b.appendChild(h('div','dl err','Tidak Terkirim'+(m.err?' · '+m.err:'')+''));x.onclick=function(){c.msgs.splice(c.msgs.indexOf(m),1);xmit(m.t)}}});
+  var lm=null;c.msgs.forEach(function(m){if(m.m=='me')lm=m});if(lm&&lm===last(c)&&lm.st!='fail')b.appendChild(h('div','dl',lm.st=='sending'?'Mengirim…':'Terkirim'));b.scrollTop=1e9}draw();
  var f=h('div','cmp'),pl=h('div','pl','+'),i=h('input'),s=h('div','snd dis');s.appendChild(ic('up',18));i.placeholder='Pesan teks';i.maxLength=100;
- function send(){var t=i.value.trim();if(!t)return;i.value='';s.classList.add('dis');c.msgs.push({m:'me',t:t,ts:Date.now()});draw();E('phone:sms',{to:n,text:t})}
+ function xmit(t){var m={m:'me',t:t,ts:Date.now(),st:'sending'};c.msgs.push(m);draw();
+  if(window.cef){E('phone:sms',String(n).replace(/\D/g,'')+'|'+t);m.tm=setTimeout(function(){if(m.st=='sending')smsRes({to:n,ok:0,msg:'Tidak ada respons'},m)},10000)}
+  else setTimeout(function(){var ok=S.credit>0&&!S.air;if(ok)S.credit--;smsRes({to:n,ok:ok,msg:S.air?'Mode Pesawat aktif':'Pulsa tidak cukup'},m)},600)}
+ function send(){var t=i.value.replace(/\|/g,'/').trim();if(!t)return;i.value='';s.classList.add('dis');xmit(t)}
  s.onclick=send;i.oninput=function(){s.classList.toggle('dis',!i.value.trim())};i.onkeydown=function(e){e.stopPropagation();if(e.key=='Enter')send()};f.appendChild(pl);f.appendChild(i);f.appendChild(s);a.appendChild(f);setTimeout(function(){i.focus()},350);window.__draw=function(m){if(cur=='th'&&m==n)draw()}}
+/* hasil kirim SMS dari Pawn: tandai pesan 'sending' paling lama di chat itu jadi sent / fail */
+function smsRes(r,m){if(r.credit!=null)S.credit=r.credit|0;var kk=String(r.to),c=null,k;
+ for(k in S.convs){if(parseInt(k,10)==parseInt(r.to,10)){kk=k;c=S.convs[k];break}}   /* cocokkan numerik: server membuang nol di depan */
+ if(!m&&c){for(var j=0;j<c.msgs.length;j++){if(c.msgs[j].m=='me'&&c.msgs[j].st=='sending'){m=c.msgs[j];break}}}
+ if(!m)return;clearTimeout(m.tm);m.st=r.ok?'sent':'fail';m.err=r.ok?'':(r.msg||'');
+ if(cur=='th'&&window.__draw)window.__draw(kk);else if(cur=='sms')smsList();else if(cur=='set')setApp()}
+function thRight(n,c){var w=h('div');w.style.cssText='display:flex;align-items:center';if(!S.cm[n]&&/^\d+$/.test(n))w.appendChild(rbtn('uadd',function(){konAdd('',n,function(){smsThread(n)})}));w.appendChild(rbtn('phone',function(){startCall(n,nameOf(n))}));return w}
 function banner(n,name,text){var e=$('nt');e.innerHTML='';var si=h('div','si');si.appendChild(ic('msg',18));var d=h('div'),t=h('div');t.style.cssText='font-size:12.5px;color:#333';t.textContent=text;d.appendChild(h('b',null,name));d.appendChild(t);e.appendChild(si);e.appendChild(d);e.onclick=function(){e.classList.remove('on');smsThread(n)};
  requestAnimationFrame(function(){e.classList.add('on')});clearTimeout(ntT);ntT=setTimeout(function(){e.classList.remove('on')},4200)}
 /* ---------- BANK ---------- */
@@ -257,27 +312,102 @@ function transfer(err){var a=scr('tf',true);hd(a,'Transfer',{back:'Bank',fn:bank
  var m=h('div');m.id='tfm';b.appendChild(m);if(err)m.appendChild(h('div','msg',err));b.appendChild(h('div','note','Saldo: '+money(S.bank.balance)));var btn=on(h('div','btn','Lanjutkan'),function(){var v=parseInt(am.value.replace(/\D/g,''),10),t=to.value.trim();m.innerHTML='';
   if(!t||!(v>0)){m.appendChild(h('div','msg','Isi tujuan dan nominal dengan benar.'));return}if(v>S.bank.balance){m.appendChild(h('div','msg','Saldo tidak cukup.'));return}sheet({to:t,amount:v,note:nt.value.trim()})});b.appendChild(btn)}
 function sheet(d){var a=document.querySelector('.app:not(.closing)'),s=h('div','shd'),t=h('div','sht');s.appendChild(t);t.appendChild(h('h3',null,'Konfirmasi Transfer'));[['Tujuan',d.to],['Nominal',money(d.amount)],['Catatan',d.note||'-'],['Sisa saldo',money(S.bank.balance-d.amount)]].forEach(function(r){var k=h('div','kv');k.appendChild(h('span',null,r[0]));k.appendChild(h('b',null,r[1]));t.appendChild(k)});
- var ok=on(h('div','btn','Kirim Sekarang'),function(){ok.classList.add('dis');lastTf=d;E('phone:transfer',d);if(!window.cef)setTimeout(function(){S.bank.balance-=d.amount;S.bank.hist.unshift({t:'Transfer ke '+d.to,amt:-d.amount,ts:Date.now()});tfr({ok:true,msg:'Berhasil'})},700)});
+ var ok=on(h('div','btn','Kirim Sekarang'),function(){ok.classList.add('dis');lastTf=d;E('phone:transfer',String(d.to).replace(/\D/g,'')+'|'+d.amount+'|'+String(d.note||'').replace(/\|/g,'/'));if(!window.cef)setTimeout(function(){S.bank.balance-=d.amount;S.bank.hist.unshift({t:'Transfer ke '+d.to,amt:-d.amount,ts:Date.now()});tfr({ok:true,msg:'Berhasil'})},700)});
  t.appendChild(ok);t.appendChild(on(h('div','btn g','Batal'),function(){s.remove()}));a.appendChild(s)}
 function tfr(r){var sh=document.querySelector('.shd');if(sh)sh.remove();if(r.balance!=null)S.bank.balance=r.balance;if(cur!='tf')return;
  if(!r.ok){transfer(r.msg||'Transfer gagal.');return}
  var a=scr('tfok',true);hd(a,'',{});var b=body(a),o=h('div','ok'),ck=h('div','ck');ck.appendChild(ic('check',44));o.appendChild(ck);o.appendChild(h('h2','','Transfer Berhasil'));o.lastChild.style.margin='0 0 4px';var am=h('div','big',money(lastTf?lastTf.amount:0));am.style.padding='0';o.appendChild(am);o.appendChild(h('div','sub','ke '+(lastTf?lastTf.to:'')));b.appendChild(o);b.appendChild(on(h('div','btn','Selesai'),bank))}
+/* ---------- KONTAK (phonebook) ---------- */
+function kon(){var a=scr('kon',true),rt=h('div');rt.style.cssText='display:flex;align-items:center';
+ rt.appendChild(rbtn(null,function(){S.kedit=S.kedit?0:1;kon()},S.kedit?'Selesai':'Ubah'));rt.appendChild(rbtn('uadd',function(){konAdd()}));
+ hd(a,'',{back:'Beranda',right:rt});var b=body(a);b.appendChild(h('div','big','Kontak'));
+ var s=h('div','srch');s.appendChild(ic('srch',16));var i=h('input');i.placeholder='Cari';i.value=S.kq||'';i.onkeydown=function(e){e.stopPropagation()};i.oninput=function(){S.kq=i.value;konFill()};s.appendChild(i);b.appendChild(s);
+ var box=h('div');box.id='konb';b.appendChild(box);konFill()}
+function konFill(){var box=$('konb');if(!box||cur!='kon')return;box.innerHTML='';
+ var f=(S.kq||'').toLowerCase();function m(c){return !f||String(c.name).toLowerCase().indexOf(f)>-1||String(c.number).indexOf(f)>-1}
+ var sv=S.saved.filter(m).sort(byName),pb=S.book?S.contacts.filter(m).sort(byName):[];
+ if(!sv.length&&!pb.length)box.appendChild(h('div','empty',f?'Tidak ditemukan.':'Belum ada kontak. Ketuk ikon kontak di kanan atas untuk menyimpan nomor.'));
+ if(sv.length){box.appendChild(h('div','sec','Kontak saya ('+sv.length+')'));sv.forEach(function(c){row(c,true)})}
+ if(pb.length){box.appendChild(h('div','sec','Phone Book ('+pb.length+' online)'));pb.forEach(function(c){row(c,false)})}
+ if(!S.book&&!f)box.appendChild(h('div','note','Punya item Phone Book? Daftar pemain online juga akan muncul di sini.'));
+ function row(c,mine){var r=h('div','mr'),w=h('div','in'),g=h('div','grow'),n=String(c.number),ed=mine&&S.kedit;
+  r.appendChild(h('div','av',init(c.name)));g.appendChild(h('b',null,c.name));g.appendChild(h('div','sub',n));w.appendChild(g);
+  if(ed){var dl=h('span','delb','Hapus');dl.onclick=function(e){e.stopPropagation();konDel(n)};w.appendChild(dl)}
+  else{var ac=h('div','kac'),cl=h('i'),sm=h('i');cl.appendChild(ic('phone',18));cl.onclick=function(e){e.stopPropagation();startCall(n,c.name)};
+   sm.appendChild(ic('msg',18));sm.onclick=function(e){e.stopPropagation();if(!S.convs[n])S.convs[n]={name:S.cm[n]||c.name,unread:0,msgs:[]};smsThread(n)};ac.appendChild(cl);ac.appendChild(sm);w.appendChild(ac)}
+  r.appendChild(w);r.onclick=function(){if(!ed)startCall(n,c.name)};box.appendChild(r)}}
+/* Form kontak baru. pre = nomor yang sudah terisi, ret = fungsi untuk kembali (default: daftar kontak) */
+function konAdd(err,pre,ret){var back=ret||function(){kon();E('phone:contacts')};var a=scr('kadd',true);hd(a,'Kontak Baru',{right:rbtn(null,back,'Batal')});
+ var b=body(a);b.style.paddingTop='8px';var f=h('div','fld'),nm=h('input'),no=h('input'),m=h('div');
+ nm.placeholder='Nama';nm.maxLength=24;no.placeholder='Nomor telepon';no.inputMode='numeric';no.maxLength=8;if(pre)no.value=String(pre);
+ [nm,no].forEach(function(x){x.onkeydown=function(e){e.stopPropagation();if(e.key=='Enter')go()};f.appendChild(x)});
+ no.oninput=function(){no.value=no.value.replace(/\D/g,'')};b.appendChild(f);b.appendChild(m);if(err)m.appendChild(h('div','msg',err));
+ b.appendChild(on(h('div','btn','Simpan Kontak'),go));
+ function bad(t){m.innerHTML='';m.appendChild(h('div','msg',t))}
+ function go(){var name=nm.value.replace(/[|"\\]/g,' ').replace(/\s+/g,' ').trim(),v=parseInt(no.value,10);
+  if(!name){bad('Isi nama kontak.');return}
+  if(!(v>0)||v>16777215){bad('Nomor telepon tidak valid.');return}
+  var key=String(v);if(key==String(parseInt(S.number,10))){bad('Itu nomor HP kamu sendiri.');return}
+  S.cm[key]=name;var ex=S.saved.filter(function(c){return String(c.number)==key})[0];if(ex)ex.name=name;else S.saved.push({name:name,number:key});
+  if(S.convs[key])S.convs[key].name=name;
+  E('phone:contact_add',key+'|'+name);back();toast('Kontak disimpan')}
+ setTimeout(function(){nm.focus()},350)}
+function konDel(n){var old=S.cm[n];delete S.cm[n];S.saved=S.saved.filter(function(c){return String(c.number)!=String(n)});
+ if(S.convs[n]&&S.convs[n].name==old)S.convs[n].name=n;E('phone:contact_del',String(n));konFill();toast('Kontak dihapus')}
+/* daftar kontak dari database (Pawn) -> sinkronkan nama di semua chat */
+function setSaved(list){var old=S.cm;S.cm={};S.saved=(list||[]).map(function(c){var n=String(c.number),nm=String(c.name||n);S.cm[n]=nm;return {name:nm,number:n}});
+ for(var k in S.convs){if(S.cm[k])S.convs[k].name=S.cm[k];else if(old[k]&&S.convs[k].name==old[k])S.convs[k].name=k}
+ if(cur=='kon')konFill();else if(cur=='sms')smsList()}
+/* ---------- STATUS BAR (mode pesawat) ---------- */
+function setSb(){var a=!!S.air;$('sig').style.display=a?'none':'block';$('pln').style.display=a?'block':'none';$('net').textContent=a?'':'5G'}
+/* ---------- PENGATURAN ---------- */
+function setApp(){var a=scr('set',true);hd(a,'',{back:'Beranda'});var b=body(a);b.appendChild(h('div','big','Pengaturan'));
+ var pf=h('div','pf'),g=h('div','grow');pf.appendChild(h('div','av',init(S.name)));g.appendChild(h('b',null,S.name));g.appendChild(h('div','sub','Nomor HP '+S.number));pf.appendChild(g);b.appendChild(pf);
+ function row(col,icon,label){var r=h('div','sr'),i=h('div','sri');i.style.background=col;i.appendChild(ic(icon,18));r.appendChild(i);r.appendChild(h('span',null,label));return r}
+ var l=h('div','sg'),r=row('#ff9f0a','plane','Mode Pesawat'),sw=h('div','sw'+(S.air?' on':''));
+ sw.onclick=function(){S.air=S.air?0:1;sw.classList.toggle('on',!!S.air);setSb();E('phone:airplane',S.air?'1':'0')};r.appendChild(sw);l.appendChild(r);b.appendChild(l);
+ b.appendChild(h('div','ft','Saat Mode Pesawat aktif, kamu tidak bisa menelepon, dan nomormu tidak bisa dihubungi lewat telepon maupun SMS.'));
+ var l2=h('div','sg'),n=row('#30d158','phone','Nomor Telepon');n.appendChild(h('span','sv',String(S.number)));l2.appendChild(n);
+ var c=row('#5e5ce6','bank','Phone Credits');c.appendChild(h('span','sv'+(S.credit<=0?' low':''),String(S.credit)));l2.appendChild(c);b.appendChild(l2);
+ b.appendChild(h('div','ft','Setiap SMS memakai 1 credit. Panggilan yang diangkat memotong 1 credit dari si penelepon.'))}
+/* ---------- AIRDROP ---------- */
+function air(){var a=scr('air',false);hd(a,'AirDrop',{back:'Beranda'});var b=body(a),r=h('div','rdr');
+ r.appendChild(h('i'));r.appendChild(h('i'));r.appendChild(h('i'));var c=h('div','core');c.appendChild(ic('air',34));r.appendChild(c);b.appendChild(r);
+ b.appendChild(h('div','adn','Pemain di sekitarmu hanya terlihat sebagai ID. Ketuk salah satu untuk menyimpan nomor HP-nya ke Kontak.'));
+ var box=h('div');box.id='airl';b.appendChild(box);drawAir()}
+function drawAir(){var box=$('airl');if(!box||cur!='air')return;box.innerHTML='';box.appendChild(h('div','sec','Di sekitar ('+S.near.length+')'));
+ if(!S.near.length){box.appendChild(h('div','empty','Tidak ada pemain di sekitar. Dekati pemain lain (maks. '+S.airRange+' m).'));return}
+ S.near.forEach(function(p){var r=h('div','crow'),i=h('div','in'),g=h('div','grow'),av=h('div','av',String(p.id));if(String(p.id).length>2)av.style.fontSize='14px';
+  r.appendChild(av);g.appendChild(h('b',null,'ID '+p.id));g.appendChild(h('div','sub',fdist(p.dist)+' dari kamu'));i.appendChild(g);i.appendChild(h('span','trk sm','Simpan'));r.appendChild(i);r.onclick=function(){airSheet(p)};box.appendChild(r)})}
+function airSheet(p){var a=document.querySelector('.app:not(.closing)');if(!a||document.querySelector('.shd'))return;var s=h('div','shd'),t=h('div','sht');s.appendChild(t);t.appendChild(h('h3',null,'Simpan Kontak ID '+p.id));
+ var f=h('div','fld'),nm=h('input');nm.placeholder='Nama kontak (kosong = ID '+p.id+')';nm.maxLength=24;nm.onkeydown=function(e){e.stopPropagation();if(e.key=='Enter')go()};f.appendChild(nm);t.appendChild(f);
+ var ok=on(h('div','btn','Simpan ke Kontak'),go);t.appendChild(ok);t.appendChild(on(h('div','btn g','Batal'),function(){s.remove()}));a.appendChild(s);setTimeout(function(){nm.focus()},300);
+ function go(){var name=nm.value.replace(/[|"\\]/g,' ').replace(/\s+/g,' ').trim();ok.classList.add('dis');E('phone:airdrop_save',p.id+'|'+name);s.remove();if(!window.cef)toast('Kontak "'+(name||'ID '+p.id)+'" disimpan')}}
+setInterval(function(){if(cur=='air'&&window.cef&&!$('ph').classList.contains('off'))E('phone:airdrop_scan')},2500);
 /* ---------- KENDARAAN ---------- */
-function pv(){var a=scr('pv',false);hd(a,'Kendaraan',{back:'Beranda',right:rbtn(null,function(){E('phone:cmd','mypv');if(window.cef){show(false);E('phone:close')}else toast('→ /mypv')},'/mypv')});var b=body(a);b.id='pvb';drawPv()}
+function pv(){var a=scr('pv',false);hd(a,'Kendaraan',{back:'Beranda',right:rbtn(null,function(){sysCmd('mypv')},'/mypv')});var b=body(a);b.id='pvb';drawPv()}
+function fdist(m){m=Number(m);if(!(m>=0))return '';return m<1000?Math.round(m)+' m':(m/1000).toFixed(1)+' km'}
 function drawPv(){var b=$('pvb');if(!b||cur!='pv')return;b.innerHTML='';if(!S.cars.length)b.appendChild(h('div','empty','Belum punya kendaraan.'));
- S.cars.forEach(function(c){var d=h('div','car'),g=h('div','grow'),ci=h('div','ci'),st=c.state||'';ci.appendChild(ic('car',26));d.appendChild(ci);g.appendChild(h('b',null,c.model));var p=h('div','sub');p.appendChild(h('span','plate',c.plate));p.appendChild(document.createTextNode(c.loc||''));g.appendChild(p);d.appendChild(g);d.appendChild(h('span','tag'+(st=='Spawn'?'':st=='Disita'||st=='Rusak'?' r':' x'),st));b.appendChild(d)})}
+ S.cars.forEach(function(c){var d=h('div','car'),g=h('div','grow'),ci=h('div','ci'),st=c.state||'';ci.appendChild(ic('car',26));d.appendChild(ci);g.appendChild(h('b',null,c.model));var p=h('div','sub');p.appendChild(h('span','plate',c.plate));g.appendChild(p);
+  var lc=(c.loc||'Lokasi tidak diketahui')+(c.dist!=null&&fdist(c.dist)?' · '+fdist(c.dist)+' dari kamu':'');g.appendChild(h('div','sub loc','📍 '+lc));
+  if(c.id!=null){var tk=h('span','trk','Lacak di peta');tk.onclick=function(){E('phone:track',String(c.id));toast(window.cef?'Waypoint dipasang di radar':'→ waypoint mobil')};g.appendChild(tk)}
+  d.appendChild(g);d.appendChild(h('span','tag'+(st=='Spawn'?'':st=='Disita'||st=='Rusak'?' r':' x'),st));b.appendChild(d)})}
 /* ---------- EVENT DARI PAWN ---------- */
 document.addEventListener('keydown',function(e){if(e.key=='Escape'){show(false);E('phone:close')}});
-document.addEventListener('keydown',function(e){if(e.key=='Escape'||((e.key=='p'||e.key=='P')&&!e.repeat)){show(false);E('phone:close')}});
-function normConvs(d){var o={};for(var k in d){var c=d[k];o[k]={name:c.name||k,unread:c.unread|0,msgs:(c.msgs||[]).map(function(m){return {m:m.m=='me'?'me':'them',t:m.t,ts:T(m.ts)}})}}return o}
-function incoming(d){var c=S.convs[d.from]||(S.convs[d.from]={name:d.name||d.from,unread:0,msgs:[]});c.msgs.push({m:'them',t:d.text,ts:T(d.ts)});
- if(cur=='th'&&curThread==d.from&&!$('ph').classList.contains('off')){window.__draw&&window.__draw(d.from);return}c.unread=(c.unread||0)+1;if(cur=='sms')smsList();else if(cur=='')home();if(!$('ph').classList.contains('off'))banner(d.from,c.name,d.text)}
+function normConvs(d){var o={};for(var k in d){var c=d[k];o[k]={name:S.cm[k]||c.name||k,unread:c.unread|0,msgs:(c.msgs||[]).map(function(m){return {m:m.m=='me'?'me':'them',t:m.t,ts:T(m.ts)}})}}return o}
+function incoming(d){var c=S.convs[d.from]||(S.convs[d.from]={name:cname(d.from),unread:0,msgs:[]});c.msgs.push({m:'them',t:d.text,ts:T(d.ts)});
+ if(cur=='th'&&curThread==d.from&&!$('ph').classList.contains('off')){E('phone:read',String(d.from));window.__draw&&window.__draw(d.from);return}c.unread=(c.unread||0)+1;if(cur=='sms')smsList();else if(cur=='')home();if(!$('ph').classList.contains('off'))banner(d.from,c.name,d.text)}
 if(window.cef){var O=cef.on.bind(cef);
- O('phone:open',function(s){var d=pr(s);if(d){S.name=d.name||S.name;S.number=d.number||S.number;if(d.bank)S.bank=d.bank}show(true);cef.set_focus(true)});
+ O('phone:open',function(s){var d=pr(s);if(d){S.name=d.name||S.name;S.number=d.number||S.number;if(d.credit!=null)S.credit=d.credit|0;S.air=d.air?1:0;setSb();if(d.bank)S.bank=d.bank}show(true);cef.set_focus(true)});
  O('phone:close',function(){show(false)});O('phone:bank',function(s){var d=pr(s);if(d)S.bank=d;if(cur=='bank')bank()});
  O('phone:sms_all',function(s){var d=pr(s);if(d){S.convs=normConvs(d);if(cur=='sms')smsList();else if(cur=='')home()}});O('phone:sms_in',function(s){var d=pr(s);if(d)incoming(d)});
  O('phone:calls',function(s){var d=pr(s);if(d)S.calls=d.map(function(c){c.ts=T(c.ts);return c})});
- O('phone:cars',function(s){var d=pr(s);if(d){S.cars=d;drawPv()}});O('phone:tf_result',function(s){var d=pr(s);if(d)tfr(d)});
+ O('phone:cars',function(s){var d=pr(s);if(d){S.cars=d;drawPv()}});O('phone:contacts',function(s){var d=pr(s);if(d){S.book=d.book?1:0;S.contacts=d.list||[];konFill()}});O('phone:tf_result',function(s){var d=pr(s);if(d)tfr(d)});
+ O('phone:saved',function(s){var d=pr(s);if(d)setSaved(d.list)});O('phone:contact_err',function(s){var d=pr(s);toast((d&&d.msg)||'Gagal menyimpan kontak')});
+ O('phone:sms_result',function(s){var d=pr(s);if(d)smsRes(d)});
+ O('phone:settings',function(s){var d=pr(s);if(d){if(d.number)S.number=String(d.number);S.credit=d.credit|0;S.air=d.air?1:0;setSb();if(cur=='set')setApp()}});
+ O('phone:airdrop',function(s){var d=pr(s);if(d){S.near=d.list||[];S.airRange=d.range||15;drawAir()}});
+ O('phone:airdrop_res',function(s){var d=pr(s);if(d)toast(d.msg||'')});
  O('phone:incoming',function(s){var d=pr(s);if(d){if(callOn)return;callOn=true;callRec=addCall(d.name||d.number,d.number,'miss');callUI(d.name||d.number,d.number,'panggilan masuk...',true);show(true)}});
  O('phone:connected',function(){var n=document.querySelector('#call h2');connected(n?n.textContent:'','')});O('phone:ended',function(s){var d=pr(s);endCall(d&&d.text)});
 }else{S.convs=normConvs(S.convs);show(true);window.__phone={openApp:openApp,startCall:startCall,show:show,S:S,sms:function(){incoming({from:'081777',name:'Rina',text:'Woy, dimana? Sudah ditunggu nih',ts:Date.now()})},ring:function(){callOn=true;callRec=addCall('Rina','081777','miss');callUI('Rina','081777','panggilan masuk...',true)}}}
