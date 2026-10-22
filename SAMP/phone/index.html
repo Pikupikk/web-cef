@@ -268,6 +268,7 @@ function drawPv(){var b=$('pvb');if(!b||cur!='pv')return;b.innerHTML='';if(!S.ca
  S.cars.forEach(function(c){var d=h('div','car'),g=h('div','grow'),ci=h('div','ci'),st=c.state||'';ci.appendChild(ic('car',26));d.appendChild(ci);g.appendChild(h('b',null,c.model));var p=h('div','sub');p.appendChild(h('span','plate',c.plate));p.appendChild(document.createTextNode(c.loc||''));g.appendChild(p);d.appendChild(g);d.appendChild(h('span','tag'+(st=='Spawn'?'':st=='Disita'||st=='Rusak'?' r':' x'),st));b.appendChild(d)})}
 /* ---------- EVENT DARI PAWN ---------- */
 document.addEventListener('keydown',function(e){if(e.key=='Escape'){show(false);E('phone:close')}});
+document.addEventListener('keydown',function(e){if(e.key=='Escape'||((e.key=='p'||e.key=='P')&&!e.repeat)){show(false);E('phone:close')}});
 function normConvs(d){var o={};for(var k in d){var c=d[k];o[k]={name:c.name||k,unread:c.unread|0,msgs:(c.msgs||[]).map(function(m){return {m:m.m=='me'?'me':'them',t:m.t,ts:T(m.ts)}})}}return o}
 function incoming(d){var c=S.convs[d.from]||(S.convs[d.from]={name:d.name||d.from,unread:0,msgs:[]});c.msgs.push({m:'them',t:d.text,ts:T(d.ts)});
  if(cur=='th'&&curThread==d.from&&!$('ph').classList.contains('off')){window.__draw&&window.__draw(d.from);return}c.unread=(c.unread||0)+1;if(cur=='sms')smsList();else if(cur=='')home();if(!$('ph').classList.contains('off'))banner(d.from,c.name,d.text)}

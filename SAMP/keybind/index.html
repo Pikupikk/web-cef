@@ -14,13 +14,13 @@
 
    DEBUG = true -> tombol terakhir yang diterima ditampilkan di pojok kiri atas layar game
    (untuk cek apakah tombol benar-benar sampai & apa isi key/code/keyCode-nya). Matikan kalau sudah beres. */
-var DEBUG = true;
+var DEBUG = false;
 var BINDS = {
   "i": "inv"
-  // "p": "phone",
+  "p": "phone",
   // "f5": "contoh"
 };
-var KC = {73:"i"};   // cadangan terakhir: keyCode -> nama (tambah sesuai kebutuhan: 80:"p", 116:"f5", ...)
+var KC = {73:"i", 80:"p"};   // cadangan terakhir: keyCode -> nama (tambah sesuai kebutuhan: 80:"p", 116:"f5", ...)
 
 var HAS = (typeof cef !== "undefined");
 var last = 0, down = {};
