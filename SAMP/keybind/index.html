@@ -1,36 +1,59 @@
 <!DOCTYPE html>
 <html lang="id"><head><meta charset="utf-8"><title>Keybind</title>
-<style>html,body{margin:0;height:100%;background:transparent;overflow:hidden}</style></head>
-<body>
+<style>html,body{margin:0;height:100%;background:transparent;overflow:hidden}
+#dbg{position:fixed;left:8px;top:8px;font:12px/1.4 monospace;color:#0f0;background:#000a;padding:4px 8px;border-radius:4px;display:none;white-space:pre}</style></head>
+<body><div id="dbg"></div>
 <script>
 /* Keybind listener (browser CEF tak terlihat, tidak ambil fokus).
    Server memanggil cef_always_listen_keys(playerid, CEF_KEY_ID, true) -> tombol sampai ke sini
-   walau game yang fokus, jadi tidak terbatas tombol bawaan GTA (KEY_YES / KEY_NO dst).
+   walau game yang fokus, jadi tidak terbatas tombol bawaan GTA.
 
-   BINDS: event.code -> nama aksi. Pakai event.code (posisi tombol fisik), bukan event.key,
-   supaya tetap jalan di layout keyboard apa pun. Daftar kode: KeyA..KeyZ, Digit0..Digit9,
-   F1..F12, Numpad0..Numpad9, Insert, Delete, Home, End, PageUp, PageDown, ArrowUp, dst.
-   Nama aksi dibaca server di OnKbPress (controllers/keybind/CEF_Keybind.pwn). */
+   BINDS: nama tombol -> nama aksi (dibaca server di OnKbPress, controllers/keybind/CEF_Keybind.pwn).
+   Nama tombol = e.key huruf kecil ("i", "f5", "insert", "arrowup") ATAU e.code ("KeyI", "F5").
+   Tombol yang dikirim ke halaman tak fokus oleh plugin kadang tidak punya e.code, jadi e.key / keyCode juga dicek.
+
+   DEBUG = true -> tombol terakhir yang diterima ditampilkan di pojok kiri atas layar game
+   (untuk cek apakah tombol benar-benar sampai & apa isi key/code/keyCode-nya). Matikan kalau sudah beres. */
+var DEBUG = true;
 var BINDS = {
-  "KeyI": "inv"
-  // "KeyP": "phone",
-  // "F5":   "contoh"
+  "i": "inv"
+  // "p": "phone",
+  // "f5": "contoh"
 };
+var KC = {73:"i"};   // cadangan terakhir: keyCode -> nama (tambah sesuai kebutuhan: 80:"p", 116:"f5", ...)
 
 var HAS = (typeof cef !== "undefined");
-var last = 0;
+var last = 0, down = {};
 function emit(a){
   if(HAS){ try{ cef.emit("key:press", a); }catch(e){} }
   else console.log("[key:press]", a);
 }
+function dbg(t){ if(!DEBUG) return; var d=document.getElementById("dbg"); d.style.display="block"; d.textContent=t; }
+function find(e){
+  var k = (e.key||"").toLowerCase();
+  if(BINDS[k]) return BINDS[k];
+  if(e.code && BINDS[e.code]) return BINDS[e.code];
+  var n = KC[e.keyCode||e.which]; if(n && BINDS[n]) return BINDS[n];
+  return null;
+}
+function fire(e, type){
+  dbg(type+"  key="+e.key+"  code="+e.code+"  keyCode="+e.keyCode);
+  if(e.ctrlKey || e.altKey || e.metaKey) return;
+  var a = find(e); if(!a) return;
+  var t = Date.now(); if(t - last < 150) return;   // anti spam
+  last = t; emit(a);
+}
 addEventListener("keydown", function(e){
-  if(e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
-  var a = BINDS[e.code];
-  if(!a) return;
-  var t = Date.now();
-  if(t - last < 150) return;        // anti spam
-  last = t;
-  emit(a);
+  if(e.repeat) return;
+  down[e.keyCode] = true;
+  fire(e, "keydown");
 });
+/* Cadangan: kalau plugin hanya mengirim keyup ke browser tak fokus, aksi tetap jalan */
+addEventListener("keyup", function(e){
+  if(down[e.keyCode]){ down[e.keyCode] = false; dbg("keyup  key="+e.key+"  code="+e.code+"  keyCode="+e.keyCode); return; }
+  fire(e, "keyup(only)");
+});
+if(HAS){ try{ cef.emit("key:ready"); }catch(e){} }
+dbg("keybind siap");
 </script>
 </body></html>
