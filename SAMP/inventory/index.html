@@ -153,7 +153,7 @@ function detail(){
   c.innerHTML="";
   var ic=document.createElement("div");ic.className="ic";ic.textContent=it.ic;
   var b=document.createElement("b");b.textContent=it.n;
-  var p=document.createElement("p");p.textContent=it.d+" "+(it.id==="money"?"Saldo: $"+Number(it.q).toLocaleString("en-US"):it.t?"Sisa masa berlaku: "+it.t+".":it.i?it.i:it.wp?(it.q<1?"Amunisi: 0. Senjata kosong, butuh peluru di tas sebelum bisa dipasang.":it.q>1?"Amunisi: "+it.q+".":"Berat: "+it.w+" kg"):"Berat: "+it.w+" kg x"+it.q);
+  var p=document.createElement("p");p.textContent=it.d+" "+(it.id==="money"?"Saldo: $"+Number(it.q).toLocaleString("en-US"):it.t?"Sisa masa berlaku: "+it.t+".":it.i?it.i:it.wp?(it.q<1?"Amunisi: 0. Klik dua kali untuk mengisi dari ammo di tas.":it.q>1?"Amunisi: "+it.q+".":"Berat: "+it.w+" kg"):"Berat: "+it.w+" kg x"+it.q);
   c.appendChild(ic);c.appendChild(b);c.appendChild(p);
   if(it.pk&&it.act){var h1=document.createElement("p");h1.textContent="HP yang sedang aktif tidak bisa diberikan. Seret ke tas dulu (HP lain bisa dipasang di slot HP).";c.appendChild(h1)}
   else if(canGive&&!inBag){var h2=document.createElement("p");h2.textContent="Item di hotbar / slot equip tidak bisa diberikan. Seret ke tas dulu.";c.appendChild(h2)}
@@ -193,7 +193,13 @@ function equipFromBag(){
 }
 function use(){
   if(!sel)return;var it=get(sel.z,sel.i);if(!it||!it.u)return;
-  if(it.st){if(it.q<1){toast("Peluru habis. Butuh peluru di tas untuk memasang senjata ini.");return}if(sel.z==="bag")equipFromBag();return}
+  if(it.st){
+    if(it.q<1){
+      if(sel.z==="bag"&&ammoOf(it.wid)){emit("inv:use",sel.z,String(sel.i),it.id);return}   /* server isi ammo + genggam */
+      toast("Peluru habis. Butuh ammo "+it.n+" di tas.");return
+    }
+    if(sel.z==="bag")equipFromBag();return
+  }
   emit("inv:use",sel.z,String(sel.i),it.id)
 }
 function drop(z,i,n){
@@ -312,11 +318,19 @@ var WN={1:"Brass Knuckles",2:"Golf Club",3:"Nightstick",4:"Knife",5:"Baseball Ba
  22:"Colt 45",23:"Silenced Pistol",24:"Desert Eagle",25:"Shotgun",26:"Sawn-off Shotgun",27:"Combat Shotgun",28:"Uzi",29:"MP5",
  30:"AK-47",31:"M4",32:"Tec-9",33:"Country Rifle",34:"Sniper Rifle",35:"RPG",36:"HS Rocket",37:"Flamethrower",38:"Minigun",
  39:"Satchel Charge",40:"Detonator",41:"Spray Can",42:"Fire Extinguisher",43:"Camera",44:"Night Vision",45:"Thermal Goggles",46:"Parachute"};
+function amcat(k){
+  var m=/^am(\d+)$/.exec(k);if(!m||!WN[+m[1]])return null;
+  return {n:"Ammo "+WN[+m[1]],ic:"\uD83D\uDD38",w:.01,d:"Peluru untuk "+WN[+m[1]]+". Klik dua kali senjata kosongnya di tas untuk mengisi otomatis.",u:0,g:1};
+}
+function ammoOf(wid){
+  var f=function(it){return it&&it.id==="am"+wid&&it.q>0};
+  return S.bag.some(f)||S.hot.some(f);
+}
 function wcat(k,r){
   var m=/^(w|sw)(\d+)$/.exec(k);if(!m)return null;
   var id=m[1]==="w"?+m[2]:+r.wid,st=m[1]==="sw";if(!WN[id])return null;
   var melee=id<=15,gun=id>=22&&id<=38;
-  return {n:WN[id],ic:melee?"\uD83D\uDD2A":id>=16&&id<=18||id===39?"\uD83D\uDCA3":gun?"\uD83D\uDD2B":"\uD83E\uDDF0",
+  return {wid:id,n:WN[id],ic:melee?"\uD83D\uDD2A":id>=16&&id<=18||id===39?"\uD83D\uDCA3":gun?"\uD83D\uDD2B":"\uD83E\uDDF0",
     w:gun?2:1,d:st?"Senjata disimpan di tas, belum bisa dipakai. Klik dua kali atau seret ke hotbar untuk memasangnya (menggantikan senjata di slot yang sama). Bisa diberikan ke pemain lain.":"Senjata aktif. Klik dua kali atau tekan angka hotbar untuk menggenggam. Pindahkan ke tas untuk menyimpannya (setelah itu baru bisa diberikan).",u:1,g:st?1:0,x:1,e:"weapon",dz:st?"":"hot",wp:1,st:st};
 }
 var LAY={};
@@ -344,9 +358,9 @@ function setData(raw){
   S.bag=new Array(BAG).fill(null);S.hot=new Array(5).fill(null);S.equip={};sel=null;
   var over=false;
   (d.bag||[]).forEach(function(r){
-    var c=CAT[r.k]||wcat(r.k,r)||phcat(r.k)||{};
+    var c=CAT[r.k]||wcat(r.k,r)||phcat(r.k)||amcat(r.k)||{};
     var it={id:r.k,n:c.n||r.k,ic:c.ic||"\uD83D\uDCE6",q:r.q,w:c.w||0,d:c.d||"",u:c.u!=null?c.u:1,g:c.g!=null?c.g:1,x:c.x?1:0,t:r.t||"",
-            e:c.e||"",dz:c.dz||"",wp:c.wp?1:0,st:c.st?1:0,i:"",pk:c.pk?1:0,act:r.a?1:0};
+            e:c.e||"",dz:c.dz||"",wp:c.wp?1:0,st:c.st?1:0,i:"",pk:c.pk?1:0,act:r.a?1:0,wid:c.wid||0};
     if(it.pk)it.i=it.act?"No. "+r.n+" \u00B7 Pulsa "+(r.c||0)+" \u00B7 AKTIF":"No. "+r.n+" \u00B7 Cadangan. Seret ke slot HP untuk mengaktifkan.";
     /* 1) posisi dari sesi ini / yang tersimpan di server  2) default (HP -> slot HP, senjata -> hotbar)  3) tas */
     var p=old[it.id]||LAY[it.id];
