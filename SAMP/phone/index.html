@@ -135,6 +135,12 @@ background-image:radial-gradient(120% 60% at 95% 22%,#ff6a1f 0,transparent 55%),
 .rdr .core{position:relative;z-index:2;width:64px;height:64px;border-radius:50%;background:linear-gradient(#58c8ff,#0a7cff);display:grid;place-items:center;box-shadow:0 6px 22px #0a84ff66}
 .adn{margin:0 28px 4px;font-size:12px;color:#8e8e93;text-align:center;line-height:1.35}
 .trk.sm{margin:0}
+#pill{position:fixed;top:14px;right:40px;display:none;align-items:center;gap:9px;max-width:300px;padding:8px 16px 8px 9px;border-radius:26px;background:#1c1c1ef2;box-shadow:0 0 0 1px #ffffff1f,0 8px 24px #0008;color:#fff;font-size:13px;pointer-events:none;z-index:99}
+#pill.on{display:flex;animation:fi .25s}
+#pill .pd{width:28px;height:28px;border-radius:50%;background:#30d158;display:grid;place-items:center;flex:none}
+#pill .pd svg{fill:#fff}
+#pill b{display:block;font-size:13.5px;font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pill small{display:block;color:#a1a1a6;font-size:11px;white-space:nowrap}
 </style></head><body>
 <div id="ph" class="off"><div id="scr">
  <div id="isl"></div>
@@ -145,6 +151,7 @@ background-image:radial-gradient(120% 60% at 95% 22%,#ff6a1f 0,transparent 55%),
  <div id="call"></div>
  <div class="hb" id="hb"></div>
 </div></div>
+<div id="pill"></div>
 <script>
 (function(){'use strict';
 /* ===== KONTRAK DENGAN PAWN (cef.emit -> Pawn / cef_emit_event <- Pawn; isi = JSON string) =====
@@ -158,6 +165,7 @@ background-image:radial-gradient(120% 60% at 95% 22%,#ff6a1f 0,transparent 55%),
   phone:cars      [{id,model,plate,state,loc,dist}]    (id = id database kendaraan, dist = jarak meter)
   phone:contacts  {book:0|1,list:[{name,number}]}       (isi phonebook; book:0 = tidak punya item phonebook)
   phone:incoming  {name,number} | phone:connected | phone:ended {text?}
+  phone:focus     {f:0}    (server melepas cursor saat telepon dimulai/tersambung -> HP disembunyikan, diganti pil status panggilan)
   phone:tf_result {ok,msg,balance}
   phone:saved     {list:[{name,number}]}                                (kontak tersimpan di database, tabel phone_contacts)
   phone:contact_err {msg}
@@ -222,7 +230,13 @@ function unread(){var n=0;for(var k in S.convs)n+=S.convs[k].unread||0;return n}
 function mk(a){var d=h('div','ic'),i=h('i');i.style.background=a[3];i.appendChild(ic(a[2],30));if(a[0]=='sms'){var u=unread();if(u){var b=h('em','bdg',u>10?'10+':u);i.appendChild(b)}}d.appendChild(i);d.appendChild(h('span',null,a[1]));d.onclick=function(){openApp(a[0])};return d}
 function home(){$('grid').innerHTML='';$('dock').innerHTML='';APPS.forEach(function(a){$('grid').appendChild(mk(a))});['tel','sms','bank','gps'].forEach(function(k){$('dock').appendChild(mk(APPS.filter(function(a){return a[0]==k})[0]))})}
 function tick(){$('clk').textContent=hm(Date.now())}setInterval(tick,10000);tick();
-function show(b){$('ph').classList.toggle('off',!b);if(b)home();else{closeApp(true);if(callOn&&false)return}}
+function show(b){$('ph').classList.toggle('off',!b);if(b){pill(false);home()}else{closeApp(true);pill(callOn)}}
+/* Pil telepon: HP disembunyikan + tanpa fokus (tanpa cursor) selama telepon, tapi status panggilan tetap kelihatan. */
+function pill(on){var p=$('pill');if(!p)return;if(!on){p.className='';return}
+ if(!p.firstChild){var d=h('div','pd');d.appendChild(ic('phone',15));var t=h('div');t.appendChild(h('b'));t.appendChild(h('small'));p.appendChild(d);p.appendChild(t)}
+ var n=document.querySelector('#call h2'),s=$('cst'),st=s?s.textContent:'';
+ p.querySelector('b').textContent=(n&&n.textContent)||'Telepon';p.querySelector('small').textContent=st+(callOn?'  \u00b7  /hu untuk menutup':'');p.className='on'}
+setInterval(function(){var p=$('pill');if(p&&p.className=='on')pill(true)},250);
 function toast(t){var e=h('div','toast',t);$('scr').appendChild(e);setTimeout(function(){e.remove()},1800)}
 /* ---------- APP SHELL ---------- */
 function closeApp(fast){var a=document.querySelector('.app:not(.closing)');if(a){a.classList.remove('on');a.classList.add('closing');setTimeout(function(){a.remove()},fast===true?0:320)}cur='';curThread='';$('scr').classList.remove('lt');$('home').classList.remove('bg');home()}
@@ -261,7 +275,7 @@ function callUI(name,num,status,inc){var c=$('call');c.innerHTML='';c.className=
  var e=h('div','cb red');e.appendChild(ic('phone',32));e.style.transform='rotate(135deg)';e.onclick=function(){E('phone:hangup');endCall('Panggilan berakhir')};c.appendChild(e)}
 function startCall(num,name){if(callOn)return;if(S.air){toast('Mode Pesawat aktif');return}callOn=true;callRec=addCall(name,num,'out');callUI(name,num,'memanggil...');E('phone:call',num);if(!window.cef)setTimeout(function(){connected(name,num)},1800)}
 function connected(name,num){callOn=true;callUI(name,num,'00:00');var av=document.querySelector('#call .av');if(av)av.classList.remove('pulse');cs=0;clearInterval(tmr);tmr=setInterval(function(){cs++;var s=$('cst');if(s)s.textContent=('0'+Math.floor(cs/60)).slice(-2)+':'+('0'+cs%60).slice(-2)},1000)}
-function endCall(t){clearInterval(tmr);var s=$('cst');if(s)s.textContent=t||'Panggilan berakhir';callOn=false;callRec=null;setTimeout(function(){$('call').className='';if(cur=='tel')tel('rec')},1000)}
+function endCall(t){clearInterval(tmr);var s=$('cst');if(s)s.textContent=t||'Panggilan berakhir';callOn=false;callRec=null;if($('pill').className=='on')pill(true);setTimeout(function(){$('call').className='';if(cur=='tel')tel('rec')},1000);setTimeout(function(){if(!callOn)pill(false)},1500)}
 /* ---------- PESAN ---------- */
 function last(c){return c.msgs[c.msgs.length-1]}
 function smsList(q){var a=scr('sms',true);hd(a,'',{back:'Beranda',right:rbtn('edit',smsNew)});var b=body(a);b.appendChild(h('div','big','Pesan'));
@@ -399,7 +413,7 @@ function incoming(d){var c=S.convs[d.from]||(S.convs[d.from]={name:cname(d.from)
  if(cur=='th'&&curThread==d.from&&!$('ph').classList.contains('off')){E('phone:read',String(d.from));window.__draw&&window.__draw(d.from);return}c.unread=(c.unread||0)+1;if(cur=='sms')smsList();else if(cur=='')home();if(!$('ph').classList.contains('off'))banner(d.from,c.name,d.text)}
 if(window.cef){var O=cef.on.bind(cef);
  O('phone:open',function(s){var d=pr(s);if(d){S.name=d.name||S.name;S.number=d.number||S.number;if(d.credit!=null)S.credit=d.credit|0;S.air=d.air?1:0;setSb();if(d.bank)S.bank=d.bank}show(true);cef.set_focus(true)});
- O('phone:close',function(){show(false)});O('phone:bank',function(s){var d=pr(s);if(d)S.bank=d;if(cur=='bank')bank()});
+ O('phone:close',function(){show(false)});O('phone:focus',function(s){var d=pr(s);if(d&&!d.f){try{cef.set_focus(false)}catch(e){}if(callOn)show(false)}});O('phone:bank',function(s){var d=pr(s);if(d)S.bank=d;if(cur=='bank')bank()});
  O('phone:sms_all',function(s){var d=pr(s);if(d){S.convs=normConvs(d);if(cur=='sms')smsList();else if(cur=='')home()}});O('phone:sms_in',function(s){var d=pr(s);if(d)incoming(d)});
  O('phone:calls',function(s){var d=pr(s);if(d)S.calls=d.map(function(c){c.ts=T(c.ts);return c})});
  O('phone:cars',function(s){var d=pr(s);if(d){S.cars=d;drawPv()}});O('phone:contacts',function(s){var d=pr(s);if(d){S.book=d.book?1:0;S.contacts=d.list||[];konFill()}});O('phone:tf_result',function(s){var d=pr(s);if(d)tfr(d)});
