@@ -408,11 +408,12 @@ function drawPv(){var b=$('pvb');if(!b||cur!='pv')return;b.innerHTML='';if(!S.ca
   d.appendChild(g);d.appendChild(h('span','tag'+(st=='Spawn'?'':st=='Disita'||st=='Rusak'?' r':' x'),st));b.appendChild(d)})}
 /* ---------- EVENT DARI PAWN ---------- */
 document.addEventListener('keydown',function(e){if(e.key=='Escape'){show(false);E('phone:close')}});
+document.addEventListener('keydown',function(e){var t=e.target&&e.target.tagName;if((e.key=='p'||e.key=='P')&&t!='INPUT'&&t!='TEXTAREA'&&Date.now()-(window.tOpen||0)>400){e.preventDefault();E('phone:walk')}},true);
 function normConvs(d){var o={};for(var k in d){var c=d[k];o[k]={name:S.cm[k]||c.name||k,unread:c.unread|0,msgs:(c.msgs||[]).map(function(m){return {m:m.m=='me'?'me':'them',t:m.t,ts:T(m.ts)}})}}return o}
 function incoming(d){var c=S.convs[d.from]||(S.convs[d.from]={name:cname(d.from),unread:0,msgs:[]});c.msgs.push({m:'them',t:d.text,ts:T(d.ts)});
  if(cur=='th'&&curThread==d.from&&!$('ph').classList.contains('off')){E('phone:read',String(d.from));window.__draw&&window.__draw(d.from);return}c.unread=(c.unread||0)+1;if(cur=='sms')smsList();else if(cur=='')home();if(!$('ph').classList.contains('off'))banner(d.from,c.name,d.text)}
 if(window.cef){var O=cef.on.bind(cef);
- O('phone:open',function(s){var d=pr(s);if(d){S.name=d.name||S.name;S.number=d.number||S.number;if(d.credit!=null)S.credit=d.credit|0;S.air=d.air?1:0;setSb();if(d.bank)S.bank=d.bank}show(true);cef.set_focus(true)});
+ O('phone:open',function(s){var d=pr(s);if(d){S.name=d.name||S.name;S.number=d.number||S.number;if(d.credit!=null)S.credit=d.credit|0;S.air=d.air?1:0;setSb();if(d.bank)S.bank=d.bank}show(true);window.tOpen=Date.now()});
  O('phone:close',function(){show(false)});O('phone:focus',function(s){var d=pr(s);if(d&&!d.f){try{cef.set_focus(false)}catch(e){}if(callOn)show(false)}});O('phone:bank',function(s){var d=pr(s);if(d)S.bank=d;if(cur=='bank')bank()});
  O('phone:sms_all',function(s){var d=pr(s);if(d){S.convs=normConvs(d);if(cur=='sms')smsList();else if(cur=='')home()}});O('phone:sms_in',function(s){var d=pr(s);if(d)incoming(d)});
  O('phone:calls',function(s){var d=pr(s);if(d)S.calls=d.map(function(c){c.ts=T(c.ts);return c})});
