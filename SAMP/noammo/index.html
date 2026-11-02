@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>NO AMMO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* Posisi & ukuran dalam PERSEN layar. Diisi dari query ?x=&y=&w=&h= dan bisa diubah live lewat event "noammo:pos". */
+  :root { --x: 85.5; --y: 13.5; --w: 6; --h: 3.2; }
+  html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; pointer-events: none; }
+
+  #box {
+    position: fixed;
+    left: calc(var(--x) * 1vw);
+    top:  calc(var(--y) * 1vh);
+    width:  calc(var(--w) * 1vw);
+    height: calc(var(--h) * 1vh);
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    display: flex; align-items: center; justify-content: center;
+    background: #0a0a0a;                       /* pekat: harus menutup "0-1" bawaan GTA */
+    border: 1px solid rgba(255, 69, 69, .55);
+    border-radius: 4px;
+    color: #ff4545;
+    font: 700 calc(var(--h) * .5vh) / 1 Arial, Helvetica, sans-serif;
+    letter-spacing: .08em;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity .12s ease;
+  }
+  #box.on { opacity: 1; }
+  #box.debug { opacity: 1; outline: 1px dashed #ffd400; outline-offset: 2px; }
+</style>
+</head>
+<body>
+<div id="box">NO AMMO</div>
+
+<script>
+(function () {
+  var box = document.getElementById('box');
+  var root = document.documentElement.style;
+  var shown = false, debug = false;
+
+  function setPos(x, y, w, h) {
+    if (isFinite(x)) root.setProperty('--x', x);
+    if (isFinite(y)) root.setProperty('--y', y);
+    if (isFinite(w)) root.setProperty('--w', w);
+    if (isFinite(h)) root.setProperty('--h', h);
+  }
+  function render() {
+    box.classList.toggle('on', shown);
+    box.classList.toggle('debug', debug);
+  }
+  function truthy(v) { return v === 1 || v === true || v === '1' || v === 'true'; }
+
+  // Posisi awal dari URL (dikirim server)
+  var q = new URLSearchParams(location.search);
+  setPos(parseFloat(q.get('x')), parseFloat(q.get('y')), parseFloat(q.get('w')), parseFloat(q.get('h')));
+  if (q.get('debug') === '1') { debug = true; }   // tes di browser biasa: ...index.html?debug=1
+  render();
+
+  if (window.cef && typeof cef.on === 'function') {
+    cef.on('noammo:set',   function (v) { shown = truthy(v); render(); });
+    cef.on('noammo:debug', function (v) { debug = truthy(v); render(); });
+    cef.on('noammo:pos',   function (s) {
+      var p = String(s).split(',').map(parseFloat);
+      setPos(p[0], p[1], p[2], p[3]);
+    });
+    cef.emit('noammo:ready');
+  }
+})();
+</script>
+</body>
+</html>
