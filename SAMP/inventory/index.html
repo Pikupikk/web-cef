@@ -26,6 +26,8 @@ h2{font-size:22px;font-weight:800;color:var(--txt)}h2 small{display:block;font-s
 .slot.src{opacity:.35}
 #ghost{position:fixed;z-index:99;width:54px;height:54px;margin:-27px 0 0 -27px;pointer-events:none;display:none;align-items:center;justify-content:center;font-size:28px;background:rgba(168,85,247,.35);border:1px solid var(--acc);border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.5)}
 .slot .q{position:absolute;right:4px;bottom:2px;font-size:10px;font-weight:700}
+.slot .dur{position:absolute;left:3px;right:3px;bottom:1px;height:3px;background:rgba(0,0,0,.55);border-radius:2px;overflow:hidden;pointer-events:none}.slot .dur i{display:block;height:100%}
+.slot.hasdur .q{bottom:6px}
 .slot .k{position:absolute;left:4px;top:2px;font-size:9px;color:var(--mut)}
 .slot .lb{position:absolute;inset:auto 0 3px 0;text-align:center;font-size:8px;letter-spacing:1px;color:var(--mut);pointer-events:none}
 #bag{overflow-y:auto;padding-right:4px;flex:1;align-content:start}
@@ -123,6 +125,8 @@ function slotEl(z,i,label,key){
   var it=get(z,i);
   if(it){d.textContent=it.ic;d.title=it.n;if(it.q>1||it.id==="money"||(it.wp&&it.q<1)){var q=document.createElement("span");q.className="q";q.textContent=fq(it);d.appendChild(q)}}
   else if(label){var l=document.createElement("span");l.className="lb";l.textContent=label;d.appendChild(l)}
+  if(it&&it.dur>=0){d.classList.add("hasdur");var db=document.createElement("span");db.className="dur";var di=document.createElement("i");
+    di.style.width=it.dur+"%";di.style.background=it.dur>50?"#22c55e":it.dur>20?"#eab308":"#ef4444";db.appendChild(di);d.appendChild(db);d.title=it.n+" ("+it.dur+"%)"}   /* bar durability senjata */
   if(key){var k=document.createElement("span");k.className="k";k.textContent=key;d.appendChild(k)}
   if(sel&&sel.z===z&&String(sel.i)===String(i))d.classList.add("sel");
   return d;
@@ -154,6 +158,7 @@ function detail(){
   var ic=document.createElement("div");ic.className="ic";ic.textContent=it.ic;
   var b=document.createElement("b");b.textContent=it.n;
   var p=document.createElement("p");p.textContent=it.d+" "+(it.id==="money"?"Saldo: $"+Number(it.q).toLocaleString("en-US"):it.t?"Sisa masa berlaku: "+it.t+".":it.i?it.i:it.wp?(it.q<1?"Amunisi: 0. Klik dua kali untuk mengisi dari ammo di tas.":it.q>1?"Amunisi: "+it.q+".":"Berat: "+it.w+" kg"):"Berat: "+it.w+" kg x"+it.q);
+  if(it.dur>=0)p.textContent+=" Durability: "+it.dur+"%"+(it.dur<1?" - RUSAK, tidak bisa dipakai.":".");
   c.appendChild(ic);c.appendChild(b);c.appendChild(p);
   if(it.pk&&it.act){var h1=document.createElement("p");h1.textContent="HP yang sedang aktif tidak bisa diberikan. Seret ke tas dulu (HP lain bisa dipasang di slot HP).";c.appendChild(h1)}
   else if(canGive&&!inBag){var h2=document.createElement("p");h2.textContent="Item di hotbar / slot equip tidak bisa diberikan. Seret ke tas dulu.";c.appendChild(h2)}
@@ -163,6 +168,7 @@ function detail(){
 /* ---- aksi ---- */
 /* slot equip hanya menerima item yang cocok (it.e = nama slot), tas & hotbar menerima apa saja */
 function can(it,z,i){if(it&&it.st&&it.q<1&&z!=="bag")return false;   /* senjata kosong (peluru 0) hanya boleh di tas */
+  if(it&&it.st&&it.dur===0&&z!=="bag")return false;   /* senjata rusak (durability 0) hanya boleh di tas */
   return !it||z!=="equip"||it.e===String(i)}
 /* seluruh susunan slot -> "key:zona:slot,..." (b=tas, h=hotbar, e=equip); server menyimpannya per karakter */
 function layout(){var o=[];
@@ -194,6 +200,7 @@ function equipFromBag(){
 function use(){
   if(!sel)return;var it=get(sel.z,sel.i);if(!it||!it.u)return;
   if(it.st){
+    if(it.dur===0){toast("Senjata rusak (durability 0), tidak bisa dipakai.");return}
     if(it.q<1){
       if(sel.z==="bag"&&ammoOf(it.wid)){emit("inv:use",sel.z,String(sel.i),it.id);return}   /* server isi ammo + genggam */
       toast("Peluru habis. Butuh ammo "+it.n+" di tas.");return
@@ -360,7 +367,7 @@ function setData(raw){
   (d.bag||[]).forEach(function(r){
     var c=CAT[r.k]||wcat(r.k,r)||phcat(r.k)||amcat(r.k)||{};
     var it={id:r.k,n:c.n||r.k,ic:c.ic||"\uD83D\uDCE6",q:r.q,w:c.w||0,d:c.d||"",u:c.u!=null?c.u:1,g:c.g!=null?c.g:1,x:c.x?1:0,t:r.t||"",
-            e:c.e||"",dz:c.dz||"",wp:c.wp?1:0,st:c.st?1:0,i:"",pk:c.pk?1:0,act:r.a?1:0,wid:c.wid||0};
+            e:c.e||"",dz:c.dz||"",wp:c.wp?1:0,st:c.st?1:0,i:"",pk:c.pk?1:0,act:r.a?1:0,wid:c.wid||0,dur:(r.d!=null?+r.d:-1)};
     if(it.pk)it.i=it.act?"No. "+r.n+" \u00B7 Pulsa "+(r.c||0)+" \u00B7 AKTIF":"No. "+r.n+" \u00B7 Cadangan. Seret ke slot HP untuk mengaktifkan.";
     /* 1) posisi dari sesi ini / yang tersimpan di server  2) default (HP -> slot HP, senjata -> hotbar)  3) tas */
     var p=old[it.id]||LAY[it.id];
@@ -394,7 +401,7 @@ if(HAS){
   /* mode demo di browser biasa */
   document.body.classList.add("demo");
   NEAR=[{id:3,n:"Budi_Santoso"},{id:7,n:"Rina_Wijaya"}];
-  setData({maxw:50,pn:"Andi_Pratama",pid:12,bag:[{k:"money",q:1454116},{k:"idcard",q:1,t:"29 days"},{k:"drivelic",q:1,t:"2 months"},{k:"bandage",q:4},{k:"snack",q:3},{k:"sprunk",q:2},{k:"medicine",q:1},{k:"gas",q:1},{k:"material",q:120},{k:"marijuana",q:5},{k:"fish",q:8},{k:"ph1",q:1,n:4821,c:5,a:1},{k:"ph2",q:1,n:7310,c:5,a:0},{k:"w24",q:70},{k:"w5",q:1},{k:"sw3",q:1,wid:4},{k:"sw9",q:0,wid:24},{k:"w31",q:300},{k:"mask",q:1},{k:"gps",q:1},{k:"walkie",q:1},{k:"fishtool",q:2},{k:"worm",q:4}]});
+  setData({maxw:50,pn:"Andi_Pratama",pid:12,bag:[{k:"money",q:1454116},{k:"idcard",q:1,t:"29 days"},{k:"drivelic",q:1,t:"2 months"},{k:"bandage",q:4},{k:"snack",q:3},{k:"sprunk",q:2},{k:"medicine",q:1},{k:"gas",q:1},{k:"material",q:120},{k:"marijuana",q:5},{k:"fish",q:8},{k:"ph1",q:1,n:4821,c:5,a:1},{k:"ph2",q:1,n:7310,c:5,a:0},{k:"w24",q:70,d:62},{k:"w5",q:1},{k:"sw3",q:1,wid:4},{k:"sw9",q:0,wid:24,d:18},{k:"w31",q:300,d:100},{k:"mask",q:1},{k:"gps",q:1},{k:"walkie",q:1},{k:"fishtool",q:2},{k:"worm",q:4}]});
   open();
 }
 window.INV={open:open,close:close,set:setData};
